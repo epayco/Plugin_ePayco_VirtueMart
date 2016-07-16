@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<extension version="1.5" type="plugin" group="vmpayment" method="upgrade">
+    <name>VMPAYMENT_PAYCO</name>
+    <creationDate>March 12 2014</creationDate>
+    <author>Payco</author>
+    <authorUrl></authorUrl>
+    <copyright></copyright>
+    <license></license>
+    <version>1.0</version>
+    <description>
+        <![CDATA[
+
+        <center>
+            <a href="http://www.ev1enlinea.com" target="_blank"><img src="../plugins/vmpayment/payco/payco/logopayco.png" alt="Payco"></a>
+            
+            <br>
+            <h3>
+                Payco<br>
+                <strong style="color: #F00;">
+                    Por seguridad recuerde siempre revisar su cuenta de Payco
+                    <br>para confirmar las transacciones antes de hacer el envio.
+                </strong>
+            <h3>
+        </center>
+        ]]>
+    </description>
+
+    <files>
+	<filename plugin="payco">payco.php</filename>
+        <filename plugin="payco">index.html</filename>
+        <folder>payco</folder>
+    </files>
+    
+    <media folder="images" destination="../images/stories/virtuemart/payment">
+	<filename>logoPayco.png</filename>
+    </media>
+    
+    <languages>
+	<language tag="es-ES">es-ES.plg_vmpayment_payco.ini</language>
+        <language tag="es-ES">es-ES.plg_vmpayment_payco.sys.ini</language>
+    </languages>
+    <params addpath="/administrator/components/com_virtuemart/elements">
+        <param	name="payment_logos" type="vmfiles" label="VMPAYMENT_PAYCO_LOGOS"
+		description="VMPAYMENT_PAYCO_LOGOS_DESC"
+		directory="/images/stories/virtuemart/payment"
+		default="logoPayco.png"
+		stripext="0" exclude="^_" />
+		<param type="spacer" default="" level="level1" />
+		<param type="text" name="payco_encrypt_key"  size="50" label="VMPAYMENT_PAYCO_KEY" default="llave de encriptacion" description="VMPAYMENT_PAYCO_KEY_DESC" />
+        <param type="spacer" default="" level="level1" />
+        <param type="text" name="payco_user_id"  size="50" label="VMPAYMENT_PAYCO_USER_ID" default="id de usuario" description="VMPAYMENT_PAYCO_USER_ID_DESC" />
+        <param type="spacer" default="" level="level1" />
+        <param type="text" name="payco_description"  size="50" label="VMPAYMENT_PAYCO_DESC" default="descripcion" description="VMPAYMENT_PAYCO_DESC_DESC" />
+        <param type="spacer" default="" level="level1" />
+        <param name="p_test_request" type="radio" label="VMPAYMENT_PAYCO_DEBUG" description="VMPAYMENT_PAYCO_DEBUG_DESC" >
+			<option value="FALSE">COM_VIRTUEMART_NO</option>
+			<option value="TRUE">COM_VIRTUEMART_YES</option>
+		</param>
+        <param type="spacer" default="" level="level1" />
+        <param name="min_amount" type="text"  label="VMPAYMENT_PAYCO_MIN_AMOUNT" description="VMPAYMENT_PAYCO_MIN_AMOUNT_EXPLAIN" />
+		<param type="spacer" default="" level="level1" />
+	    <param name="max_amount" type="text"  label="VMPAYMENT_PAYCO_MAX_AMOUNT" description="VMPAYMENT_PAYCO_MAX_AMOUNT_EXPLAIN" />
+		<!--<param type="spacer" default="" level="level1" />
+        <param name="path" type="text"  label="VMPAYMENT_PAYCO_RUTA" description="VMPAYMENT_PAYCO_RUTA_EXPLAIN" />
+		<param type="spacer" default="" level="level1" />-->
+        <param name="tax_id" type="vmtaxes" scope="com_virtuemart"  label="VMPAYMENT_PAYCO_TAX" description="VMPAYMENT_PAYCO_TAX_EXPLAIN" />
+        <!--<param type="text" name="PAYCO_url_respuesta"  size="50" label="VMPAYMENT_PAYCO_RESP" default="url de respuesta" description="VMPAYMENT_PAYCO_RESP_DESC" />
+        <param type="text" name="PAYCO_url_confirmacion"  size="50" label="VMPAYMENT_PAYCO_CONF" default="url de confirmacion" description="VMPAYMENT_PAYCO_CONF_DESC" />-->
+    </params>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="estilo" type="list"
+                    description="PAYCO_CONFIG_ESTILO_DESC"
+                    label="PAYCO_CONFIG_ESTILO_LABEL"
+                    default="0">
+                    <option value="0">PAYCO_CONFIG_ESTILO_DEFAULT</option>
+                    <option value="1">PAYCO_CONFIG_ESTILO_RED</option>
+                    <option value="2">PAYCO_CONFIG_ESTILO_BLUE</option>                 
+                </field>
+                <field name="logo" type="text"
+                    description="PAYCO_CONFIG_LOGO_DESC"
+                    label="PAYCO_CONFIG_LOGO_LABEL"
+                    default=""/>
+                </fieldset>
+        </fields>
+    </config>
+</extension>
