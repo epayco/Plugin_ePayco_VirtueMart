@@ -52,19 +52,20 @@
 
 ## Pasos
 
-<img src="ImgTutorialVirtueMart/tuto-1.png" width="400px"/>
-<img src="ImgTutorialVirtueMart/tuto-2.png" width="400px"/>
-<img src="ImgTutorialVirtueMart/tuto-3.png" width="400px"/>
-<img src="ImgTutorialVirtueMart/tuto-4.png" width="400px"/>
-<img src="ImgTutorialVirtueMart/tuto-5.png" width="400px"/>
-<img src="ImgTutorialVirtueMart/tuto-6.png" width="400px"/>
-<img src="ImgTutorialVirtueMart/tuto-7.png" width="400px"/>
-<img src="ImgTutorialVirtueMart/tuto-8.png" width="400px"/>
-<img src="ImgTutorialVirtueMart/tuto-9.png" width="400px"/>
-<img src="ImgTutorialVirtueMart/tuto-10.png" width="400px"/>
-<img src="ImgTutorialVirtueMart/tuto-11.png" width="400px"/>
-<img src="ImgTutorialVirtueMart/tuto-12.png" width="400px"/>
-<img src="ImgTutorialVirtueMart/tuto-13.png" width="400px"/>
+<img src="ImgTutorialVirtueMart/tuto-1.jpg" width="400px"/>
+<img src="ImgTutorialVirtueMart/tuto-2.jpg" width="400px"/>
+<img src="ImgTutorialVirtueMart/tuto-3.jpg" width="400px"/>
+<img src="ImgTutorialVirtueMart/tuto-4.jpg" width="400px"/>
+<img src="ImgTutorialVirtueMart/tuto-5.jpg" width="400px"/>
+<img src="ImgTutorialVirtueMart/tuto-6.jpg" width="400px"/>
+<img src="ImgTutorialVirtueMart/tuto-7.jpg" width="400px"/>
+<img src="ImgTutorialVirtueMart/tuto-8.jpg" width="400px"/>
+<img src="ImgTutorialVirtueMart/tuto-9.jpg" width="400px"/>
+<img src="ImgTutorialVirtueMart/tuto-10.jpg" width="400px"/>
+<img src="ImgTutorialVirtueMart/tuto-11.jpg" width="400px"/>
+<img src="ImgTutorialVirtueMart/tuto-12.jpg" width="400px"/>
+<img src="ImgTutorialVirtueMart/tuto-13.jpg" width="400px"/>
+
 
 
 ## Versiones
