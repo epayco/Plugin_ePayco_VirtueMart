@@ -1,4 +1,4 @@
-#ePayco plugin para VirtieMart v2.0
+#ePayco plugin para VirtueMart v2.0
 
 **Si usted tiene alguna pregunta o problema, no dude en ponerse en contacto con nuestro soporte técnico: desarrollo@payco.co.**
 
@@ -12,7 +12,7 @@
 ## Requisitos
 
 * Tener una cuenta activa en [ePayco](https://pagaycobra.com).
-* Tener instalado VirtieMart v2.0.
+* Tener instalado VirtueMart v2.0.
 * Acceso a las carpetas donde se encuetra instalado PrestaShop.
 * Acceso al admin de PrestaShop.
 
@@ -40,4 +40,4 @@
 <img src="ImgTutorialPrestaShop/tuto-8.png" width="400px"/>
 
 ## Versiones
-* [ePayco plugin VirtieMart v2.0](https://github.com/epayco/Plugin_ePayco_PrestaShop/releases/tag/1.6.1.6).
+* [ePayco plugin VirtueMart v2.0](https://github.com/epayco/Plugin_ePayco_PrestaShop/releases/tag/1.6.1.6).
