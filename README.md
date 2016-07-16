@@ -12,21 +12,31 @@
 ## Requisitos
 
 * Tener una cuenta activa en [ePayco](https://pagaycobra.com).
-* Tener instalado VirtueMart v2.0.
-* Acceso a las carpetas donde se encuetra instalado PrestaShop.
-* Acceso al admin de PrestaShop.
+* Tener instalado Joomla v2.5 y VirtueMart v2.0.
+* Acceso a las carpetas donde se encuetra instalado Joomla y VirtueMart.
+* Acceso al admin de Joomla.
 
 ## Instalación
 
-1. [Descarga el plugin.](https://github.com/epayco/Plugin_ePayco_PrestaShop/releases/tag/1.6.1.6)
-2. Ingresar a tu administrador de PrestaShop.
-3. Ingresa a Módulos y Servicios.
-4. Carga el plugin en PrestaShop.
-5. Buscar el plugin ePayco en la lista de módulos.
-6. Haz click en Instalar.
-7. Haz click en Seguir con la Instalación.
-8. Ingresa al panel de clientes de ePayco para obtener el **P_CUST_ID_CLIENTE** y **P_KEY**.
-9. Por último configura el plugin de ePayco ingresando los datos del formulario. 
+1. [Descarga el plugin.](https://github.com/epayco/Plugin_ePayco_VirtueMart/releases/tag/2.0)
+2. Diríjase a la sección **Extensions** en el menú principal y despliegue las opciones, haga click en la opcion **Extension Manager**.
+3. En la sección **Upload Package File**, haga clic en el botón **Seleccionar archivo**, y proceda a buscar y seleccionar el plugin de ePayco.
+4. Luego de seleccionar el plugin, haga clic sobre el botón **Upload & install**, Joomla le notificara cuando la instalación termine, luego diríjase a la sección **Manage**.
+5. Encontrará un campo disponible para buscar, digite Payco y presione el botón search, en la tabla se mostrar el plugin de ePayco con estado inactivo(círculo rojo), seleccione el plugin.
+6. Oprima el botón verde con el texto **Enable** que se encuentra en la parte superior, para activar. Cuando el círculo rojo que se encuentra en el campo status en la tabla cambie a color verde, significa que el plugin está activo.
+7. Ahora diríjase a la sección **Components**, ubique en el menú que se despliega la opción **VirtueMart** y haga clic sobre ella.
+8. Ahora se encuentra en el menú de administración de VirtueMart ubique la opción **Payment Methods** y haga clic sobre ella.
+9. En la Parte superior izquierda, encontrara varios botones, haga clic sobre el botón New con el símbolo de un (+), para añadir un nuevo método de pago.
+10. Configure los siguientes campos:
+* **Payment Name**: Ingrese el nombre ePayco
+* **Sef Alias**: Ingrese como alias ePayco
+* **Published**: Esta opción permitirá activar el plugin en el VirtueMart.
+* **Payment Description**: Ingrese ePayco
+* **Payment Method**: despliegue las opcines y ubique la opción
+* VMPAYMENT_PAYCO selecciónela
+11. Presione el botón **Save & close** que se encuentra en la parte superior derecha para guardar la configuración.
+12. Ahora payco aparece en la tabla de métodos de pagos, ahora haga clic sobre el nombre y pase al siguiente punto de configuración.
+
 
 ## Pasos
 
@@ -40,4 +50,4 @@
 <img src="ImgTutorialPrestaShop/tuto-8.png" width="400px"/>
 
 ## Versiones
-* [ePayco plugin VirtueMart v2.0](https://github.com/epayco/Plugin_ePayco_PrestaShop/releases/tag/1.6.1.6).
+* [ePayco plugin VirtueMart v2.0](https://github.com/epayco/Plugin_ePayco_VirtueMart/releases/tag/2.0).
