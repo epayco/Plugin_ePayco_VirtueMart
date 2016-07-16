@@ -28,12 +28,14 @@
 8. Ahora se encuentra en el menú de administración de VirtueMart ubique la opción **Payment Methods** y haga clic sobre ella.
 9. En la Parte superior izquierda, encontrara varios botones, haga clic sobre el botón New con el símbolo de un (+), para añadir un nuevo método de pago.
 10. Configure los siguientes campos:
-* **Payment Name**: Ingrese el nombre ePayco
-* **Sef Alias**: Ingrese como alias ePayco
-* **Published**: Esta opción permitirá activar el plugin en el VirtueMart.
-* **Payment Description**: Ingrese ePayco
-* **Payment Method**: despliegue las opcines y ubique la opción
-* VMPAYMENT_PAYCO selecciónela
+
+	* **Payment Name**: Ingrese el nombre ePayco
+	* **Sef Alias**: Ingrese como alias ePayco
+	* **Published**: Esta opción permitirá activar el plugin en el VirtueMart.
+	* **Payment Description**: Ingrese ePayco
+	* **Payment Method**: despliegue las opcines y ubique la opción
+	* VMPAYMENT_PAYCO selecciónela
+
 11. Presione el botón **Save & close** que se encuentra en la parte superior derecha para guardar la configuración.
 12. Ahora payco aparece en la tabla de métodos de pagos, ahora haga clic sobre el nombre y pase al siguiente punto de configuración.
 
