@@ -52,14 +52,20 @@
 
 ## Pasos
 
-<img src="ImgTutorialPrestaShop/tuto-1.png" width="400px"/>
-<img src="ImgTutorialPrestaShop/tuto-2.png" width="400px"/>
-<img src="ImgTutorialPrestaShop/tuto-3.png" width="400px"/>
-<img src="ImgTutorialPrestaShop/tuto-4.png" width="400px"/>
-<img src="ImgTutorialPrestaShop/tuto-5.png" width="400px"/>
-<img src="ImgTutorialPrestaShop/tuto-6.png" width="400px"/>
-<img src="ImgTutorialPrestaShop/tuto-7.png" width="400px"/>
-<img src="ImgTutorialPrestaShop/tuto-8.png" width="400px"/>
+<img src="ImgTutorialVirtueMart/tuto-1.png" width="400px"/>
+<img src="ImgTutorialVirtueMart/tuto-2.png" width="400px"/>
+<img src="ImgTutorialVirtueMart/tuto-3.png" width="400px"/>
+<img src="ImgTutorialVirtueMart/tuto-4.png" width="400px"/>
+<img src="ImgTutorialVirtueMart/tuto-5.png" width="400px"/>
+<img src="ImgTutorialVirtueMart/tuto-6.png" width="400px"/>
+<img src="ImgTutorialVirtueMart/tuto-7.png" width="400px"/>
+<img src="ImgTutorialVirtueMart/tuto-8.png" width="400px"/>
+<img src="ImgTutorialVirtueMart/tuto-9.png" width="400px"/>
+<img src="ImgTutorialVirtueMart/tuto-10.png" width="400px"/>
+<img src="ImgTutorialVirtueMart/tuto-11.png" width="400px"/>
+<img src="ImgTutorialVirtueMart/tuto-12.png" width="400px"/>
+<img src="ImgTutorialVirtueMart/tuto-13.png" width="400px"/>
+
 
 ## Versiones
 * [ePayco plugin VirtueMart v2.0](https://github.com/epayco/Plugin_ePayco_VirtueMart/releases/tag/2.0).
