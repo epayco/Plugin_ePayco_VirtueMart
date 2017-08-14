@@ -1,4 +1,15 @@
 <?php
+
+    function url(){
+    if(isset($_SERVER['HTTPS'])){
+        $protocol = ($_SERVER['HTTPS'] && $_SERVER['HTTPS'] != "off") ? "https" : "http";
+    }
+    else{
+        $protocol = 'http';
+    }
+    return $protocol . "://" . $_SERVER['HTTP_HOST'] ;
+    }
+
     error_reporting(8191);
     require_once('../../../../configuration.php');
     $objConf = new JConfig();
@@ -156,14 +167,14 @@
                             </tr>
                              <tr>
                                 <th><strong> Codigo de aprobacion: </strong></th>
-                                <td>'.$_REQUEST['x_aproval_code'].'</td>
+                                <td>'.$_REQUEST['x_approval_code'].'</td>
                             </tr>
                             <tr>
                                 <th><strong> Codigo de Respuesta POL: </strong></th>
                                 <td>'.$_REQUEST['x_response_reason_text'].'</td>
                             </tr>
                             <tr>
-                                <td><a href="'.dirname(__FILE__).'">Regresar a la tienda</a></td>
+                                <td><a href="'.url().'">Regresar a la tienda</a></td>
                             </tr>
                         </tbody>
                     </table>
