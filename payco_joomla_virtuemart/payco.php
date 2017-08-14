@@ -160,11 +160,11 @@ class plgVmPaymentPayco extends vmPSPlugin {
 			'p_cust_id_cliente' => $method->payco_user_id,
             'p_id_factura'      => $order['details']['BT']->order_number,
             'p_amount'          => number_format(floatval($totalInPaymentCurrency), '2','.',''),
-            'p_tax'             => $iva,
-            'p_amount_base' 	=> $baseDevolucionIva,
+            'p_tax'             => 0,
+            'p_amount_base' 	=> 0,
             'p_currency_code'   => 'COP',
             'p_url_respuesta'  	=> JURI_VMPAYCO .'/payco/' .'confirmacion.php',
-            //'p_url_respuesta' => JURI::base(),
+            'p_url_confirmation'=> JURI_VMPAYCO .'/payco/' .'confirmacion.php',
             'p_email'    		=> $order['details']['BT']->email,
             'p_key'             => $firma,
             'p_test_request'    => $method->p_test_request,
@@ -174,10 +174,10 @@ class plgVmPaymentPayco extends vmPSPlugin {
             );
 
 
-		$gateway = "http://secure2.payco.co/payment.php";
+		$gateway = "https://secure.payco.co/payment.php";
 		if($method->p_test_request == "TRUE")
 		{
-			$gateway = "http://secure2.payco.co/payment.php";
+			$gateway = "https://secure.payco.co/payment.php";
 		}
 
 		//var_dump($post_variables);die();
@@ -196,7 +196,7 @@ class plgVmPaymentPayco extends vmPSPlugin {
 		$dbValues['tax_id'] = $method->tax_id;
 		$this->storePSPluginInternalData ($dbValues);*/
 
-		$url = "secure2.payco.co/payment.php";
+		//$url = "secure.payco.co/payment.php";
 
 		$html = '<html><head><title>Redirection</title></head><body><div style="margin: auto; text-align: center;">';
 		$html .= '<form action="'.$gateway.'" method="post" name="vm_payco_form">';
