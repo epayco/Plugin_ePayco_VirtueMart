@@ -62,10 +62,7 @@
 <img src="ImgTutorialVirtueMart/tuto-7.jpg" width="400px"/>
 <img src="ImgTutorialVirtueMart/tuto-8.jpg" width="400px"/>
 <img src="ImgTutorialVirtueMart/tuto-9.jpg" width="400px"/>
-<img src="ImgTutorialVirtueMart/tuto-10.jpg" width="400px"/>
-<img src="ImgTutorialVirtueMart/tuto-11.jpg" width="400px"/>
-<img src="ImgTutorialVirtueMart/tuto-12.jpg" width="400px"/>
-<img src="ImgTutorialVirtueMart/tuto-13.jpg" width="400px"/>
+
 
 ## Versiones
 * [ePayco plugin VirtueMart v3.9.13](https://github.com/epayco/Plugin_ePayco_VirtueMart/releases/tag/3.9.13).
