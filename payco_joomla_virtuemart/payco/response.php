@@ -1,5 +1,15 @@
 <?php
-
+function extractWord($text, $position){
+    $words = explode('|', $text);
+    $characters = -1; 
+    foreach($words as $word){
+       $characters += strlen($word);
+       if($characters >= $position){
+          return $word;
+       }   
+    }   
+    return ''; 
+ } 
 $url = 'https://secure.epayco.co/validation/v1/reference/'.$_GET['ref_payco'];
 $responseData = agafa_dades($url,false,goter());
 $jsonData = @json_decode($responseData, true);

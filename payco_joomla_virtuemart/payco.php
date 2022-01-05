@@ -319,6 +319,21 @@ class plgVmPaymentPayco extends vmPSPlugin {
                 data-epayco-autoClick=\"true\"
                 >
             </script>
+			<script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js\"></script>
+            <script>
+				window.onload = function() {
+					document.addEventListener(\"contextmenu\", function(e){
+						e.preventDefault();
+					}, false);
+				} 
+                $(document).keydown(function (event) {
+                    if (event.keyCode == 123) {
+                    	return false;
+                    } else if (event.ctrlKey && event.shiftKey && event.keyCode == 73) {        
+                    	return false;
+                    }
+                });
+            </script>
         </form>";
 
 		$cart = VirtueMartCart::getCart();
