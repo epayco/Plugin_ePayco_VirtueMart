@@ -1,5 +1,4 @@
 <?php
-
 function extractWord($text, $position){
     $words = explode('|', $text);
     $characters = -1; 
@@ -11,6 +10,49 @@ function extractWord($text, $position){
     }   
     return ''; 
  } 
+$url = 'https://secure.epayco.co/validation/v1/reference/'.$_GET['ref_payco'];
+$responseData = agafa_dades($url,false,goter());
+$jsonData = @json_decode($responseData, true);
+$validationData = $jsonData['data'];
+
+function agafa_dades($url) {
+    if (function_exists('curl_init')) {
+        $ch = curl_init();
+        $timeout = 5;
+        $user_agent='Mozilla/5.0 (Windows NT 6.1; rv:8.0) Gecko/20100101 Firefox/8.0';
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+        curl_setopt($ch,CURLOPT_TIMEOUT,$timeout);
+        curl_setopt($ch,CURLOPT_MAXREDIRS,10);
+        $data = curl_exec($ch);
+        curl_close($ch);
+        return $data;
+    }else{
+        $data =  @file_get_contents($url);
+        return $data;
+    }
+}
+function goter(){
+    $context = stream_context_create(array(
+        'http' => array(
+            'method' => 'POST',
+            'header' => 'Content-Type: application/x-www-form-urlencoded',
+            'protocol_version' => 1.1,
+            'timeout' => 10,
+            'ignore_errors' => true
+        )
+    ));
+}
+
+$url = $_SERVER['REQUEST_SCHEME']."://".$_SERVER['SERVER_NAME'].$_SERVER['REQUEST_URI'];
+$server_name = str_replace('/plugins/vmpayment/payco/payco/response.php?ref_payco='.$_GET['ref_payco'],'/index.php?option=com_virtuemart&view=orders&layout=details&order_number=',$url);
+$new_url = $server_name.$validationData['x_extra1']."&order_pass=".$validationData['x_extra2']."&";
 require_once('../../../../configuration.php');
 $objConf = new JConfig();
 //Escriba su Host, por lo general es 'localhost'
@@ -30,10 +72,13 @@ $conn = mysqli_connect($host, $login,$password,$basedatos);
 // $conexion = mysql_connect($host, $login, $password);
 if($conn){
 echo "Connected Successfully...."; 
-$estadoPol = trim($_REQUEST['x_respuesta']);
-$refVenta = trim($_REQUEST['x_extra1']);
-$refOrderId=trim($_REQUEST['x_extra3']);
-$refOrderIditem=trim($_REQUEST['x_extra3']);
+$estadoPol = trim($validationData['x_respuesta']);
+$refVenta = trim($validationData['x_extra1']);
+$refOrderId=trim($validationData['x_extra3']);
+$refOrderIditem=trim($validationData['x_extra3']);
+$x_test_request = trim($validationData['x_test_request']);
+$isTestTransaction = $x_test_request == 'TRUE' ? "yes" : "no";
+$isTestMode = $isTestTransaction == "yes" ? true : false;
 $sql_order =  "SELECT * FROM ".$pf."virtuemart_orders WHERE order_number = '".$refVenta."'"; 
 $query = mysqli_query($conn, $sql_order);
 if ($query){
@@ -53,15 +98,14 @@ if ($query){
 }else{
     $order_status_final = "C";
 }
-
 switch($estadoPol)
 {
     case 'Aceptada':
         echo 'Aceptada ' . $refVenta . '<br>';
-        $sql = "UPDATE ".$pf."virtuemart_orders SET order_status ='".$order_status_final."' WHERE order_number = '".$refVenta."'";
-        $sqld = "UPDATE ".$pf."virtuemart_order_histories SET order_status_code ='".$order_status_final."' WHERE virtuemart_order_id = '".$refOrderId."'";
-        $sqli = "UPDATE ".$pf."virtuemart_order_items SET order_status ='".$order_status_final."' WHERE virtuemart_order_id = '".$refOrderId."' AND  virtuemart_order_item_id = '".$refOrderIditem."' ";
-
+            $sql = "UPDATE ".$pf."virtuemart_orders SET order_status ='".$order_status_final."' WHERE order_number = '".$refVenta."'";
+            $sqld = "UPDATE ".$pf."virtuemart_order_histories SET order_status_code ='".$order_status_final."' WHERE virtuemart_order_id = '".$refOrderId."'";
+            $sqli = "UPDATE ".$pf."virtuemart_order_items SET order_status ='".$order_status_final."' WHERE virtuemart_order_id = '".$refOrderId."' AND  virtuemart_order_item_id = '".$refOrderIditem."' ";
+        
          if (mysqli_query($conn, $sql) && mysqli_query($conn, $sqld) && mysqli_query($conn, $sqli)) {
             echo "Record updated successfully";
         } else {
@@ -71,10 +115,10 @@ switch($estadoPol)
     break;
     case 'Rechazada': 
         echo 'Rechazada ' . $refVenta . '<br>';
-        $sql = "UPDATE ".$pf."virtuemart_orders SET order_status ='X' WHERE order_number = '".$refVenta."'";
-        $sqld = "UPDATE ".$pf."virtuemart_order_histories SET order_status_code ='X' WHERE virtuemart_order_id = '".$refOrderId."'";
-        $sqli = "UPDATE ".$pf."virtuemart_order_items SET order_status ='X' WHERE virtuemart_order_id = '".$refOrderId."' AND  virtuemart_order_item_id = '".$refOrderIditem."' ";
-
+            $sql = "UPDATE ".$pf."virtuemart_orders SET order_status ='X' WHERE order_number = '".$refVenta."'";
+            $sqld = "UPDATE ".$pf."virtuemart_order_histories SET order_status_code ='X' WHERE virtuemart_order_id = '".$refOrderId."'";
+            $sqli = "UPDATE ".$pf."virtuemart_order_items SET order_status ='X' WHERE virtuemart_order_id = '".$refOrderId."' AND  virtuemart_order_item_id = '".$refOrderIditem."' ";
+        
          if (mysqli_query($conn, $sql) && mysqli_query($conn, $sqld) && mysqli_query($conn, $sqli)) {
         echo "Record updated successfully";
         } else {
@@ -88,7 +132,6 @@ switch($estadoPol)
             $sql = "UPDATE ".$pf."virtuemart_orders SET order_status ='P' WHERE order_number = '".$refVenta."'";
             $sqld = "UPDATE ".$pf."virtuemart_order_histories SET order_status_code ='P' WHERE virtuemart_order_id = '".$refOrderId."'";
             $sqli = "UPDATE ".$pf."virtuemart_order_items SET order_status ='P' WHERE virtuemart_order_id = '".$refOrderId."' AND  virtuemart_order_item_id = '".$refOrderIditem."' ";
-
          if (mysqli_query($conn, $sql) && mysqli_query($conn, $sqld) && mysqli_query($conn, $sqli)) {
         echo "Record updated successfully";
         } else {
@@ -99,7 +142,6 @@ switch($estadoPol)
 }else{
     mysqli_close($conn);
 }
-
-
+header("Location:". $new_url);
 exit;
 ?>
