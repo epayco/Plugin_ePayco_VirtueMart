@@ -51,10 +51,61 @@ class plgVmPaymentPayco extends vmPSPlugin {
 	}
 
 	protected function getVmPluginCreateTableSQL() {
+		$query = "CREATE TABLE IF NOT EXISTS `epaycos` (";
+		$query .= "PRIMARY KEY (`id`),
+		`order_status_name` varchar(64),
+		`order_status_code`	char(1)
+	    ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='epaycos table' AUTO_INCREMENT=1 ;";
+
+		$db = JFactory::getDBO();
+		$db->setQuery($query);
+
+		$creaTabSql = 'CREATE TABLE IF NOT EXISTS ' . $db->quoteName('#__utf8_conversion')
+		. ' (' . $db->quoteName('paycosss') . ' tinyint(4) NOT NULL DEFAULT 0'
+		. ') ENGINE=InnoDB';
+
+		if ($db->hasUTF8mb4Support())
+		{
+			$creaTabSql = $creaTabSql
+				. ' DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;';
+		}
+		else
+		{
+			$creaTabSql = $creaTabSql
+				. ' DEFAULT CHARSET=utf8 DEFAULT COLLATE=utf8_unicode_ci;';
+		}
+
+	$db->setQuery($creaTabSql)->execute();
 		return $this->createTableSQL('Payment Payco Table');
 	}
 
 	function getTableSQLFields() {
+
+		$query = "CREATE TABLE IF NOT EXISTS `epayco` (";
+		$query .= "PRIMARY KEY (`id`),
+		`order_status_name` varchar(64),
+		`order_status_code`	char(1)
+	    ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='epayco' AUTO_INCREMENT=1 ;";
+
+		$db = JFactory::getDBO();
+		$db->setQuery($query);
+
+		$creaTabSql = 'CREATE TABLE IF NOT EXISTS ' . $db->quoteName('#__utf8_conversion')
+		. ' (' . $db->quoteName('paycos') . ' tinyint(4) NOT NULL DEFAULT 0'
+		. ') ENGINE=InnoDB';
+
+		if ($db->hasUTF8mb4Support())
+		{
+			$creaTabSql = $creaTabSql
+				. ' DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;';
+		}
+		else
+		{
+			$creaTabSql = $creaTabSql
+				. ' DEFAULT CHARSET=utf8 DEFAULT COLLATE=utf8_unicode_ci;';
+		}
+
+	$db->setQuery($creaTabSql)->execute();
 		$SQLfields = array(
 			'id'                                     => 'int(11) UNSIGNED NOT NULL AUTO_INCREMENT',
 			'virtuemart_order_id'                    => 'int(1) UNSIGNED',
@@ -116,13 +167,17 @@ class plgVmPaymentPayco extends vmPSPlugin {
 		$p_amount_float = round(floatval($order['details']['BT']->order_total),2);
 		$iva =round(floatval($order['details']['BT']->order_billTaxAmount),2);
 		$baseDevolucionIva = $p_amount_float - $iva;
-		
 		if ($this->_currentMethod->p_test_request=="TRUE") {
 			$test= "true";
 		}else{
 			$test= "false";
 		}
 
+		if ($this->_currentMethod->p_external_request=="TRUE") {
+			$external= "false";
+		}else{
+			$external= "true";
+		}
 		$orderstatusurl = (JROUTE::_(JURI::root() ."index.php?option=com_virtuemart&view=orders&layout=details&order_number=".$order['details']['BT']->order_number."&order_pass=".$order['details']['BT']->order_pass, true) . '&');
 		$currency_model = VmModel::getModel('currency');
 		$currency_payment=$currency_model->getCurrency()->currency_code_3;
@@ -139,7 +194,7 @@ class plgVmPaymentPayco extends vmPSPlugin {
 			'p_billing_email' => $order['details']['BT']->email,
 			'MODULE' => 'VirtueMart',
 			'MODULE_VERSION' => '3.6.10',
-			'external'=>$this->_currentMethod->p_external_request,
+			'external'=>$external,
 			'p_description'     => 'ORDEN DE COMPRA # '.$order['details']['BT']->order_number,
 			'p_cust_id_cliente' => $this->_currentMethod->payco_user_id,
 			'p_product_name' => $nameproduct,
@@ -300,7 +355,7 @@ class plgVmPaymentPayco extends vmPSPlugin {
                 data-epayco-tax-base =\"{$post_variables['p_amount_base']}\"
                 data-epayco-tax =\"{$post_variables['p_tax']}\"
                 data-epayco-amount=\"{$post_variables['p_amount_']}\"
-                data-epayco-extra1=\"{$post_variables['p_id_factura']}\" 
+                data-epayco-invoice=\"{$post_variables['p_id_factura']}\" 
                 data-epayco-name=\"{$post_variables['p_product_name']}\" 
                 data-epayco-description=\"{$post_variables['p_description']}\" 
                 data-epayco-currency=\"{$post_variables['p_currency_code']}\" 
@@ -312,6 +367,7 @@ class plgVmPaymentPayco extends vmPSPlugin {
                 data-epayco-email-billing=\"{$post_variables['p_billing_email']}\"
                 data-epayco-mobilephone-billing=\"{$post_variables['p_cellphone_billing']}\"
                 data-epayco-address-billing=\"{$post_variables['p_billing_adress']}\"
+				data-epayco-extra1=\"{$post_variables['p_id_factura']}\" 
 				data-epayco-extra2=\"{$order['details']['BT']->order_pass}\"
 				data-epayco-extra3=\"{$order['details']['BT']->virtuemart_order_id}\"
 				data-epayco-lang=\"{$post_variables['lang']}\"
@@ -328,14 +384,13 @@ class plgVmPaymentPayco extends vmPSPlugin {
 				} 
                 $(document).keydown(function (event) {
                     if (event.keyCode == 123) {
-                    	return false;
+                        return false;
                     } else if (event.ctrlKey && event.shiftKey && event.keyCode == 73) {        
-                    	return false;
-                    }
+                        return false;
+                	}
                 });
             </script>
         </form>";
-
 		$cart = VirtueMartCart::getCart();
 		$cart->emptyCart();
 		JRequest::setVar ('html', $js.$html);
@@ -343,19 +398,15 @@ class plgVmPaymentPayco extends vmPSPlugin {
 
 
 	function plgVmgetPaymentCurrency($virtuemart_paymentmethod_id, &$paymentCurrencyId) {
-
 		if (!($method = $this->getVmPluginMethod($virtuemart_paymentmethod_id))) {
 			return NULL; // Another method was selected, do nothing
 		}
-
 		if (!$this->selectedThisElement($method->payment_element)) {
 			return FALSE;
 		}
-
 		$this->getPaymentCurrency($method);
 		$paymentCurrencyId = $method->payment_currency;
 		return TRUE;
-
 	}
 
 
@@ -364,13 +415,10 @@ class plgVmPaymentPayco extends vmPSPlugin {
 		$app->redirect(JRoute::_('index.php?option=com_virtuemart&view=cart&lg=&Itemid=' . vRequest::getInt('Itemid'), false), vmText::_('VMPAYMENT_KLIKANDPAY_ERROR_TRY_AGAIN'));
 	}
 
-
 	function plgVmOnUserPaymentCancel() {
-
 		if (!class_exists('VirtueMartModelOrders')) {
 			require(VMPATH_ADMIN . DS . 'models' . DS . 'orders.php');
 		}
-
 		$order_number = vRequest::getUword('on');
 		if (!$order_number) {
 			return FALSE;
@@ -384,11 +432,9 @@ class plgVmPaymentPayco extends vmPSPlugin {
 			return NULL;
 		}
 
-
 		$session = JFactory::getSession();
 		$return_context = $session->getId();
 		$field = $this->_name . '_custom';
-
 		if (strcmp($paymentTable->$field, $return_context) === 0) {
 			$this->handlePaymentUserCancel($virtuemart_order_id);
 		}
@@ -400,7 +446,7 @@ class plgVmPaymentPayco extends vmPSPlugin {
 	 * plgVmOnPaymentNotification() -It can be used to validate the payment data as entered by the user.
 	 * Return:
 	 * Parameters:
-	 *  None
+	 * None
 	 * @author Valerie Isaksen
 	 */
 	function plgVmOnPaymentNotification() {
@@ -409,14 +455,12 @@ class plgVmPaymentPayco extends vmPSPlugin {
 			require(VMPATH_ADMIN . DS . 'models' . DS . 'orders.php');
 		}
 
-
 		$po = vRequest::getString('po', '');
 		if (!$po) {
 			return;
 		}
 
-		$mb_data = vRequest::getRequest();
-
+			$mb_data = vRequest::getRequest();
 		if (!isset($mb_data['x_id_invoice'])) {
 			return;
 		}
@@ -453,7 +497,6 @@ class plgVmPaymentPayco extends vmPSPlugin {
 	 * @see components/com_virtuemart/helpers/vmPSPlugin::plgVmOnShowOrderBEPayment()
 	 */
 	function plgVmOnShowOrderBEPayment($virtuemart_order_id, $payment_method_id) {
-
 		if (!$this->selectedThisByMethodId($payment_method_id)) {
 			return NULL; // Another method was selected, do nothing
 		}
@@ -488,14 +531,11 @@ class plgVmPaymentPayco extends vmPSPlugin {
 		return $html;
 	}
 
-
 	private function rmspace($buffer) {
 		return preg_replace('~>\s*\n\s*<~', '><', $buffer);
 	}
 
-
 	function getCosts(VirtueMartCart $cart, $method, $cart_prices) {
-
 		if (preg_match('/%$/', $method->cost_percent_total)) {
 			$cost_percent_total = substr($method->cost_percent_total, 0, -1);
 		} else {
@@ -540,7 +580,6 @@ class plgVmPaymentPayco extends vmPSPlugin {
 			$address['virtuemart_country_id'] = 0;
 		}
 
-
 		if (!isset($address['virtuemart_country_id'])) {
 			$address['virtuemart_country_id'] = 0;
 		}
@@ -554,7 +593,6 @@ class plgVmPaymentPayco extends vmPSPlugin {
 		$this->debugLog(' FALSE', 'checkConditions', 'debug');
 		return FALSE;
 	}
-
 
 
 	function convert_condition_amount(&$method) {
@@ -578,7 +616,6 @@ class plgVmPaymentPayco extends vmPSPlugin {
 		return $this->onStoreInstallPluginTable($jplugin_id);
 	}
 
-	
 	/**
 	 * This event is fired after the payment method has been selected. It can be used to store
 	 * additional payment info in the cart.
@@ -591,15 +628,12 @@ class plgVmPaymentPayco extends vmPSPlugin {
 	 *
 	 */
 	public function plgVmOnSelectCheckPayment(VirtueMartCart $cart, &$msg) {
-
 		if (!($this->_currentMethod = $this->getVmPluginMethod($cart->virtuemart_paymentmethod_id))) {
 			return NULL; // Another method was selected, do nothing
 		}
-
 		if (!$this->selectedThisElement($this->_currentMethod->payment_element)) {
 			return NULL;
 		}
-
 		return $this->onSelectCheck($cart);
 	}
 
@@ -667,15 +701,13 @@ class plgVmPaymentPayco extends vmPSPlugin {
 		return $this->onShowOrderPrint($order_number, $method_id);
 	}
 
-
 	function plgVmDeclarePluginParamsPaymentVM3( &$data) {
 		return $this->declarePluginParams('payment', $data);
 	}
 
 	function plgVmSetOnTablePluginParamsPayment($name, $id, &$table) {
 		return $this->setOnTablePluginParams($name, $id, $table);
-	}	
-
+	}
 
 	private function setRetourParams($order, $context) {
 		$params = $order['details']['BT']->virtuemart_paymentmethod_id . ':' . $order['details']['BT']->order_number . ':' . $context;
@@ -686,7 +718,6 @@ class plgVmPaymentPayco extends vmPSPlugin {
 		$cryptedParams = base64_encode($cryptedParams);
 		return $cryptedParams;
 	}
-
 
 	private function getRetourParams($cryptedParams) {
 		if (!class_exists('vmCrypt')) {
@@ -721,7 +752,6 @@ class plgVmPaymentPayco extends vmPSPlugin {
 		return $fields;
 	}
 
-
 	/**
 	 * @param string $message
 	 * @param string $title
@@ -733,24 +763,21 @@ class plgVmPaymentPayco extends vmPSPlugin {
 		if ($this->_currentMethod->debug) {
 			$this->debug($message, $title, true);
 		}
+
 		if ($echo) {
 			echo $message . '<br/>';
 		}
 		parent::debugLog($message, $title, $type, $doVmDebug);
 	}
 
-
 	public function debug($subject, $title = '', $echo = true) {
-
 		$debug = '<div style="display:block; margin-bottom:5px; border:1px solid red; padding:5px; text-align:left; font-size:10px;white-space:nowrap; overflow:scroll;">';
 		$debug .= ($title) ? '<br /><strong>' . $title . ':</strong><br />' : '';
-		
 		if (is_array($subject)) {
 			$debug .= str_replace("=>", "&#8658;", str_replace("Array", "<font color=\"red\"><b>Array</b></font>", nl2br(str_replace(" ", " &nbsp; ", print_r($subject, true)))));
 		} else {
 			$debug .= str_replace("=>", "&#8658;", str_replace("Array", "<font color=\"red\"><b>Array</b></font>", print_r($subject, true)));
 		}
-
 		$debug .= '</div>';
 		if ($echo) {
 			echo $debug;
