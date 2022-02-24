@@ -1,6 +1,6 @@
 <?php
 
-$url = 'https://secure.epayco.co/validation/v1/reference/'.$_GET['ref_payco'];
+$url = 'https://secure.epayco.io/validation/v1/reference/'.$_GET['ref_payco'];
 $responseData = agafa_dades($url,false,goter());
 $jsonData = @json_decode($responseData, true);
 $validationData = $jsonData['data'];
@@ -113,7 +113,7 @@ if($conn){
         case 1:
             $sqlProduct_ = "UPDATE ".$pf."virtuemart_products SET product_in_stock ='".$stockToUpdate."'
                                      WHERE virtuemart_product_id = '".(int)$product_row->virtuemart_product_id."'";
-            if($row->order_status == "P"){
+            if($row->order_status == "P" || $row->order_status == "X"){
                 mysqli_query($conn, $sqlProduct_);
             }
             $sql = "UPDATE ".$pf."virtuemart_orders SET order_status ='".$order_status_final."' WHERE order_number = '".$refVenta."'";

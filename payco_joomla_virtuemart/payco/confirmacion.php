@@ -119,11 +119,11 @@ if($conn){
             {
                 case 1:
                     echo 'Aceptada ' . $refVenta . '<br>';
-                    if($row->order_status != "X"){
+                    
                     $sql = "UPDATE ".$pf."virtuemart_orders SET order_status ='".$order_status_final."' WHERE order_number = '".$refVenta."'";
                     $sqld = "UPDATE ".$pf."virtuemart_order_histories SET order_status_code ='".$order_status_final."' WHERE virtuemart_order_id = '".$refOrderId."'";
                     $sqli = "UPDATE ".$pf."virtuemart_order_items SET order_status ='".$order_status_final."' WHERE virtuemart_order_id = '".$refOrderId."' AND  virtuemart_order_item_id = '".$refOrderIditem."' ";
-                    }
+                    
                     break;
                 case 2: 
                     echo 'Rechazada ' . $refVenta . '<br>';

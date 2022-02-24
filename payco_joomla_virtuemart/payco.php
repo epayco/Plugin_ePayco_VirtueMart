@@ -349,7 +349,7 @@ class plgVmPaymentPayco extends vmPSPlugin {
 
 		<form class=\"text-center\">
 
-            <script src=\"https://checkout.epayco.co/checkout.js\" 
+            <script src=\"https://epayco-checkout-testing.s3.amazonaws.com/checkout.preprod.js?version=1643645084821\" 
                 class=\"epayco-button\" id=\"change\"
                 data-epayco-key=\"{$post_variables['p_public_key']}\"
                 data-epayco-tax-base =\"{$post_variables['p_amount_base']}\"
@@ -670,7 +670,7 @@ class plgVmPaymentPayco extends vmPSPlugin {
                 $html .= '<span class="vmpayment_description">'.$this->_currentMethod->payment_desc.'</span>';
                 $html .= '<br>
                 <span class="vmpayment_cardinfo">
-                    <img src="https://multimedia.epayco.co/epayco-landing/btns/epayco-logo-fondo-oscuro-lite.png"  width="100px" style="padding-left: 26px;">   
+                    <img src="https://multimedia.epayco.co/epayco-landing/btns/epayco-logo-fondo-oscuro-lite.png"  width="200px" style="padding-left: 26px;">   
                 </span>
                 ';  $htmla[] = $html;
             }
