@@ -349,7 +349,7 @@ class plgVmPaymentPayco extends vmPSPlugin {
 
 		<form class=\"text-center\">
 
-            <script src=\"https://checkout.epayco.co/checkout.js\" 
+            <script src=\"https://epayco-checkout-testing.s3.amazonaws.com/checkout.preprod.js?version=1643645084821\" 
                 class=\"epayco-button\" id=\"change\"
                 data-epayco-key=\"{$post_variables['p_public_key']}\"
                 data-epayco-tax-base =\"{$post_variables['p_amount_base']}\"
@@ -650,7 +650,33 @@ class plgVmPaymentPayco extends vmPSPlugin {
 	 * @author Valerie Isaksen
 	 */
 	public function plgVmDisplayListFEPayment(VirtueMartCart $cart, $selected = 0, &$htmlIn) {
-		return $this->displayListFE($cart, $selected, $htmlIn);
+		if ($this->getPluginMethods($cart->vendorId) === 0) {
+            if (empty($this->_name)) {
+                $app = JFactory::getApplication();
+                $app->enqueueMessage(vmText::_('COM_VIRTUEMART_CART_NO_' . strtoupper($this->_psType)));
+                return FALSE;
+            } else {
+                return FALSE;
+            }
+        }
+        $htmla = array();
+        $html = '';
+        foreach ($this->methods as $this->_currentMethod) {
+            if ($this->checkConditions($cart, $this->_currentMethod, $cart->cartPrices)) {
+                $cartPrices=$cart->cartPrices;
+                $methodSalesPrice = $this->setCartPrices($cart, $cartPrices, $this->_currentMethod);
+                $this->_currentMethod->$method_name = $this->renderPluginName($this->_currentMethod);
+                $html = $this->getPluginHtml($this->_currentMethod, $selected, $methodSalesPrice);  
+                $html .= '<span class="vmpayment_description">'.$this->_currentMethod->payment_desc.'</span>';
+                $html .= '<br>
+                <span class="vmpayment_cardinfo">
+                    <img src="https://multimedia.epayco.co/epayco-landing/btns/epayco-logo-fondo-oscuro-lite.png"  width="200px" style="padding-left: 26px;">   
+                </span>
+                ';  $htmla[] = $html;
+            }
+        }
+        $htmlIn[] = $htmla;
+        return TRUE;
 	}
 
 
