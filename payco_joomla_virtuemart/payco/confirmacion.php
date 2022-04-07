@@ -143,7 +143,7 @@ if($conn){
                 break;           
                 case 3:
                     echo 'Pendiente ' . $refVenta . '<br>';
-                    if($row->order_status != "P"){
+                    if($row->order_status == "P" || $row->order_status == "X"){
                         $stockToUpdate = ((int)$products_->product_in_stock-(int)$product_row->product_quantity);
                         $sqlProduct_ = "UPDATE ".$pf."virtuemart_products SET product_in_stock ='".$stockToUpdate."'
                         WHERE virtuemart_product_id = '".(int)$product_row->virtuemart_product_id."'";

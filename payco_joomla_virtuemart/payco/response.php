@@ -132,7 +132,7 @@ if($conn){
             $sqli = "UPDATE ".$pf."virtuemart_order_items SET order_status ='X' WHERE virtuemart_order_id = '".$refOrderId."' AND  virtuemart_order_item_id = '".$refOrderIditem."' ";
         break;           
         case 3:
-            if($row->order_status == "P"){
+            if($row->order_status == "P" || $row->order_status == "X"){
                 $sqlProduct_ = "UPDATE ".$pf."virtuemart_products SET product_in_stock ='".$stockToUpdate."'
                 WHERE virtuemart_product_id = '".(int)$product_row->virtuemart_product_id."'";
                 mysqli_query($conn, $sqlProduct_);
