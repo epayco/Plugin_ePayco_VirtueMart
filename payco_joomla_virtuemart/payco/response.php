@@ -132,14 +132,15 @@ if($conn){
             $sqli = "UPDATE ".$pf."virtuemart_order_items SET order_status ='X' WHERE virtuemart_order_id = '".$refOrderId."' AND  virtuemart_order_item_id = '".$refOrderIditem."' ";
         break;           
         case 3:
+            if($row->order_status == "P"){
+                $sqlProduct_ = "UPDATE ".$pf."virtuemart_products SET product_in_stock ='".$stockToUpdate."'
+                WHERE virtuemart_product_id = '".(int)$product_row->virtuemart_product_id."'";
+                mysqli_query($conn, $sqlProduct_);
+            }
             $sql = "UPDATE ".$pf."virtuemart_orders SET order_status ='P' WHERE order_number = '".$refVenta."'";
             $sqld = "UPDATE ".$pf."virtuemart_order_histories SET order_status_code ='P' WHERE virtuemart_order_id = '".$refOrderId."'";
             $sqli = "UPDATE ".$pf."virtuemart_order_items SET order_status ='P' WHERE virtuemart_order_id = '".$refOrderId."' AND  virtuemart_order_item_id = '".$refOrderIditem."' ";
-            $sqlProduct_ = "UPDATE ".$pf."virtuemart_products SET product_in_stock ='".$stockToUpdate."'
-                                     WHERE virtuemart_product_id = '".(int)$product_row->virtuemart_product_id."'";
-            if($row->order_status == "P"){
-                mysqli_query($conn, $sqlProduct_);
-            }
+            
         break;
         default:
             if($row->order_status != "X"){
