@@ -32,7 +32,7 @@ defined('_JEXEC') or die('Direct Access to ' . basename(__FILE__) . 'is not allo
 if (!class_exists('vmPSPlugin')) {
 	require(VMPATH_PLUGINLIBS . DS . 'vmpsplugin.php');
 }
-
+//require_once('../../../../configuration.php');
 class plgVmPaymentPayco extends vmPSPlugin {
 
 	function __construct(& $subject, $config) {
@@ -391,6 +391,7 @@ class plgVmPaymentPayco extends vmPSPlugin {
                 });
             </script>
         </form>";
+        $this->restorStock($post_variables['p_id_factura']);
 		$cart = VirtueMartCart::getCart();
 		$cart->emptyCart();
 		JRequest::setVar ('html', $js.$html);
@@ -488,6 +489,47 @@ class plgVmPaymentPayco extends vmPSPlugin {
 		$orderModel = VmModel::getModel('orders');
 		$order = $orderModel->getOrder($virtuemart_order_id);
 		return TRUE;
+	}
+	
+	
+	public function restorStock($refVenta){
+	    $db = JFactory::getDBO();
+        $pf = $db->getPrefix();
+		$q = 'SELECT * FROM `' . $pf.'virtuemart_orders' . '` WHERE ';
+		$q .= ' `order_number` = "' . (string)$refVenta.'"';
+		$db->setQuery($q);
+		$sql_order = $db->loadObjectList();
+
+        if($sql_order){
+            $orderProduct_query = "SELECT * FROM ".$pf."virtuemart_order_items WHERE virtuemart_order_id = '".(int)$sql_order[0]->virtuemart_order_id."'";
+            $db->setQuery($orderProduct_query);
+            $orderProductQuery = $db->loadObjectList();
+            $productsData = [];
+
+            if($orderProductQuery){
+                foreach ($orderProductQuery as $product_item) {
+                    $product_query = "SELECT * FROM ".$pf."virtuemart_products WHERE virtuemart_product_id = '".(int)$product_item->virtuemart_product_id."'";
+                    $db->setQuery($product_query);
+                    $productQuery = $db->loadObjectList();
+                    if($productQuery){
+                        foreach ($productQuery as $product_data) {
+                            $stockToUpdate = ((int)$product_data->product_in_stock-(int)$product_item->product_quantity);
+                            $products['id']=$product_data->virtuemart_product_id;
+                            $products['quantity']=$stockToUpdate;
+                            $productsData[] = $products;
+                        }
+
+                    }
+                }
+            }
+        }
+        //var_dump($productsData);
+        //die();
+        foreach ($productsData as $miProduct){
+            $sqlProduct_ = "UPDATE ".$pf."virtuemart_products SET product_in_stock ='".$miProduct['quantity']."'
+              WHERE virtuemart_product_id = '".(int)$miProduct['id']."'";
+            $db->setQuery($sqlProduct_)->execute();
+        }
 	}
 
 
