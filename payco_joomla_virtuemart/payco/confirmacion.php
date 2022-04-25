@@ -1,5 +1,4 @@
 <?php
-//require_once('../../../../administrator/components/com_virtuemart/plugins/vmpsplugin.php');
 function extractWord($text, $position){
     $words = explode('|', $text);
     $characters = -1; 
@@ -28,7 +27,7 @@ $pf = $objConf->dbprefix;
 $mensajeLog = "";
 
 $conn = mysqli_connect($host, $login,$password,$basedatos);
-// $conexion = mysql_connect($host, $login, $password);
+
 if($conn){
     echo "Connected Successfully...."; 
     $estadoPol = trim($_REQUEST['x_respuesta']);
@@ -81,12 +80,15 @@ if($conn){
             $product_query = "SELECT * FROM ".$pf."virtuemart_products WHERE virtuemart_product_id = '".(int)$product_item[3]."'"; 
             $productQuery = mysqli_query($conn, $product_query);
             $products_ = mysqli_fetch_object($productQuery);
-            
-            if($x_cod_transaction_state == 1 || $x_cod_transaction_state == 3){
-                $stockToUpdate = ((int)$products_->product_in_stock-(int)$product_item[6]);
-            }else{
-                $stockToUpdate = ((int)$products_->product_in_stock+(int)$product_item[6]);
-            }
+             if( $amount_order == floatval($x_amount)){
+                if($x_cod_transaction_state == 1 || $x_cod_transaction_state == 3){
+                    $stockToUpdate = ((int)$products_->product_in_stock-(int)$product_item[6]);
+                }else{
+                    $stockToUpdate = ((int)$products_->product_in_stock+(int)$product_item[6]);
+                }
+             }else{
+                 $stockToUpdate = ((int)$products_->product_in_stock+(int)$product_item[6]);
+             }
             $products['id']=(int)$product_item[3];
             $products['quantity']=$stockToUpdate;
             $productsData[] = $products;
@@ -133,7 +135,6 @@ if($conn){
                     echo 'Aceptada ' . $refVenta . '<br>';
                     if($row->order_status == "X"){
                        foreach ($productsData as $product_item){
-                           var_dump($product_item['id'],$product_item['quantity']);
                            $sqlProduct_ = "UPDATE ".$pf."virtuemart_products SET product_in_stock ='".$product_item['quantity']."'
                             WHERE virtuemart_product_id = '".(int)$product_item['id']."'";
                             mysqli_query($conn, $sqlProduct_);
@@ -148,7 +149,6 @@ if($conn){
                     echo 'Rechazada ' . $refVenta . '<br>';
                     if($row->order_status != "X"){
                        foreach ($productsData as $product_item){
-                           var_dump($product_item['id'],$product_item['quantity']);
                            $sqlProduct_ = "UPDATE ".$pf."virtuemart_products SET product_in_stock ='".$product_item['quantity']."'
                             WHERE virtuemart_product_id = '".(int)$product_item['id']."'";
                             mysqli_query($conn, $sqlProduct_);
@@ -162,7 +162,6 @@ if($conn){
                     echo 'Pendiente ' . $refVenta . '<br>';
                     if($row->order_status == "X"){
                        foreach ($productsData as $product_item){
-                           var_dump($product_item['id'],$product_item['quantity']);
                            $sqlProduct_ = "UPDATE ".$pf."virtuemart_products SET product_in_stock ='".$product_item['quantity']."'
                             WHERE virtuemart_product_id = '".(int)$product_item['id']."'";
                             mysqli_query($conn, $sqlProduct_);
@@ -176,7 +175,6 @@ if($conn){
                     echo 'default ' . $refVenta . '<br>';
                     if($row->order_status != "X"){
                        foreach ($productsData as $product_item){
-                           var_dump($product_item['id'],$product_item['quantity']);
                            $sqlProduct_ = "UPDATE ".$pf."virtuemart_products SET product_in_stock ='".$product_item['quantity']."'
                             WHERE virtuemart_product_id = '".(int)$product_item['id']."'";
                             mysqli_query($conn, $sqlProduct_);
@@ -188,14 +186,11 @@ if($conn){
                 break;
             }
         }else{
-            if($row->order_status != "X"){
                foreach ($productsData as $product_item){
-                   var_dump($product_item['id'],$product_item['quantity']);
                    $sqlProduct_ = "UPDATE ".$pf."virtuemart_products SET product_in_stock ='".$product_item['quantity']."'
                     WHERE virtuemart_product_id = '".(int)$product_item['id']."'";
                     mysqli_query($conn, $sqlProduct_);
                }
-            }
             $sql = "UPDATE ".$pf."virtuemart_orders SET order_status ='X' WHERE order_number = '".$refVenta."'";
             $sqld = "UPDATE ".$pf."virtuemart_order_histories SET order_status_code ='X' WHERE virtuemart_order_id = '".$refOrderId."'";
             $sqli = "UPDATE ".$pf."virtuemart_order_items SET order_status ='X' WHERE virtuemart_order_id = '".$refOrderId."' AND  virtuemart_order_item_id = '".$refOrderIditem."' ";
