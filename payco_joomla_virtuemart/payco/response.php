@@ -1,6 +1,6 @@
 <?php
 
-$url = 'https://secure.epayco.co/validation/v1/reference/'.$_GET['ref_payco'];
+$url = 'https://secure.epayco.io/validation/v1/reference/'.$_GET['ref_payco'];
 $responseData = agafa_dades($url,false,goter());
 $jsonData = @json_decode($responseData, true);
 $validationData = $jsonData['data'];
