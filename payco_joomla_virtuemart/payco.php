@@ -349,7 +349,7 @@ class plgVmPaymentPayco extends vmPSPlugin {
 
         <form class=\"text-center\">
 
-            <script src=\"https://epayco-checkout-testing.s3.amazonaws.com/checkout.preprod.js\" 
+            <script src=\"https://checkout.epayco.co/checkout.js\" 
                 class=\"epayco-button\" id=\"change\"
                 data-epayco-key=\"{$post_variables['p_public_key']}\"
                 data-epayco-tax-base =\"{$post_variables['p_amount_base']}\"
