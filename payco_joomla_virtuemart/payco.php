@@ -346,34 +346,45 @@ class plgVmPaymentPayco extends vmPSPlugin {
             <p style=\"text-align: center;\" class=\"epayco-title\" >
             ".$msgEpaycoCheckout."
             </p>
-
+            <center>
+                <a id=\"btn_epayco\" style=\"text-align: center;\" href=\"#\">
+                    <img src=\".$button.\">
+                </a>
+            </center>
         <form class=\"text-center\">
-
-            <script src=\"https://epayco-checkout-testing.s3.amazonaws.com/checkout.preprod.js\" 
-                class=\"epayco-button\" id=\"change\"
-                data-epayco-key=\"{$post_variables['p_public_key']}\"
-                data-epayco-tax-base =\"{$post_variables['p_amount_base']}\"
-                data-epayco-tax =\"{$post_variables['p_tax']}\"
-                data-epayco-amount=\"{$post_variables['p_amount_']}\"
-                data-epayco-invoice=\"{$post_variables['p_id_factura']}\" 
-                data-epayco-name=\"{$post_variables['p_product_name']}\" 
-                data-epayco-description=\"{$post_variables['p_description']}\" 
-                data-epayco-currency=\"{$post_variables['p_currency_code']}\" 
-                data-epayco-test=\"{$test}\"
-                data-epayco-external=\"{$post_variables['external']}\"
-                data-epayco-response=\"{$post_variables['p_url_respuesta']}\"
-                data-epayco-country=\"{$post_variables['p_country_code']}\"
-                data-epayco-confirmation=\"{$post_variables['p_confirmation_url']}\" 
-                data-epayco-email-billing=\"{$post_variables['p_billing_email']}\"
-                data-epayco-mobilephone-billing=\"{$post_variables['p_cellphone_billing']}\"
-                data-epayco-address-billing=\"{$post_variables['p_billing_adress']}\"
-                data-epayco-extra1=\"{$post_variables['p_id_factura']}\" 
-                data-epayco-extra2=\"{$order['details']['BT']->order_pass}\"
-                data-epayco-extra3=\"{$order['details']['BT']->virtuemart_order_id}\"
-                data-epayco-lang=\"{$post_variables['lang']}\"
-                data-epayco-button=\"{$button}\"
-                data-epayco-autoClick=\"true\"
-                >
+            <script src=\"https://epayco-checkout-testing.s3.amazonaws.com/checkout.preprod.js\"></script>
+            <script>
+                var handler = ePayco.checkout.configure({
+                    key: \"{$post_variables['p_public_key']}\",
+                    test: \"{$test}\"
+                })
+                var date = new Date().getTime();
+                var data = {
+                    name: \"{$post_variables['p_product_name']}\",
+                    description: \"{$post_variables['p_description']}\",
+                    invoice: \"{$post_variables['p_id_factura']}\",
+                    currency: \"{$post_variables['p_currency_code']}\",
+                    amount: \"{$post_variables['p_amount_']}\",
+                    tax_base: \"{$post_variables['p_amount_base']}\",
+                    tax: \"{$post_variables['p_tax']}\",
+                    taxIco: \"0\",
+                    country: \"{$post_variables['p_country_code']}\",
+                    lang: \"{$post_variables['lang']}\",
+                    external: \"{$post_variables['external']}\",
+                    confirmation: \"{$post_variables['p_confirmation_url']}\",
+                    response: \"{$post_variables['p_url_respuesta']}\",
+                    address_billing: \"{$post_variables['p_billing_adress']}\",
+                    email_billing: \"{$post_variables['p_billing_email']}\",
+                    extra1: \"{$post_variables['p_id_factura']}\",
+                    extra2: \"{$order['details']['BT']->order_pass}\",
+                    extra3: \"{$order['details']['BT']->virtuemart_order_id}\"
+                }
+                var openChekout = function () {
+                    handler.open(data);
+                }
+                var bntPagar = document.getElementById(\"btn_epayco\");
+                bntPagar.addEventListener(\"click\", openChekout);
+                setTimeout(openChekout, 2000)  
             </script>
             <script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js\"></script>
             <script>
