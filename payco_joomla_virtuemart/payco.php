@@ -348,7 +348,7 @@ class plgVmPaymentPayco extends vmPSPlugin {
             </p>
             <center>
                 <a id=\"btn_epayco\" style=\"text-align: center;\" href=\"#\">
-                    <img src=\".$button.\">
+                    <img src=\"{$button}\">
                 </a>
             </center>
         <form class=\"text-center\">
