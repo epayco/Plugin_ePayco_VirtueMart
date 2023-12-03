@@ -178,6 +178,8 @@ class plgVmPaymentPayco extends vmPSPlugin {
         }else{
             $external= "true";
         }
+        $autoclick="true";
+        $ip=$this->getIp();
         $orderstatusurl = (JROUTE::_(JURI::root() ."index.php?option=com_virtuemart&view=orders&layout=details&order_number=".$order['details']['BT']->order_number."&order_pass=".$order['details']['BT']->order_pass, true) . '&');
         $currency_model = VmModel::getModel('currency');
         $currency_payment=$currency_model->getCurrency()->currency_code_3;
@@ -207,6 +209,7 @@ class plgVmPaymentPayco extends vmPSPlugin {
             'p_currency_code'   => $currency_payment,
             'p_url_status'	=> 	(JROUTE::_ (JURI::root () . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginnotification&tmpl=component')),
             'p_public_key'      => $this->_currentMethod->payco_public_key,
+            'p_private_key'      => $this->_currentMethod->payco_private_key,
             'p_test_request'    => $test,
             'notification_url' => (JROUTE::_ (JURI::root () .'index.php?option=com_virtuemart&view=vmplg&task=pluginNotification&tmpl=component&on=' . $order['details']['BT']->order_number . '&pm=' . $order['details']['BT']->virtuemart_paymentmethod_id . '&o_id='.$order['details']['BT']->virtuemart_order_id)),
             'p_confirmation_url' =>  JURI::base() .'plugins/vmpayment/payco/payco/' .'confirmacion.php',
@@ -214,11 +217,11 @@ class plgVmPaymentPayco extends vmPSPlugin {
             'lang' =>  $this->_currentMethod->epayco_lang
         );
             if($this->_currentMethod->epayco_lang == "en"){
-                $button = "https://multimedia.epayco.co/epayco-landing/btns/Boton-epayco-color-Ingles.png"; 
+                $button = 'plugins/vmpayment/payco/payco/images/Boton-color-Ingles.png';
                 $msgEpaycoCheckout = '<span class="animated-points">Loading payment methods</span>
                 <br><small class="epayco-subtitle"> If they do not load automatically, click on the "Pay with ePayco" button</small>';
             }else{
-                $button = "https://multimedia.epayco.co/epayco-landing/btns/Boton-epayco-color1.png";
+                $button = 'plugins/vmpayment/payco/payco/images/Boton-color-espanol.png';
                 $msgEpaycoCheckout = '<span class="animated-points">Cargando métodos de pago</span>
                 <br><small class="epayco-subtitle"> Si no se cargan automáticamente, de clic en el botón "Pagar con ePayco</small>';
             }
@@ -348,7 +351,7 @@ class plgVmPaymentPayco extends vmPSPlugin {
             </p>
             <center>
                 <a id=\"btn_epayco\" style=\"text-align: center;\" href=\"#\">
-                    <img src=\"{$button}\">
+                    <img src=\".$button.\">
                 </a>
             </center>
         <form class=\"text-center\">
@@ -364,9 +367,9 @@ class plgVmPaymentPayco extends vmPSPlugin {
                     description: \"{$post_variables['p_description']}\",
                     invoice: \"{$post_variables['p_id_factura']}\",
                     currency: \"{$post_variables['p_currency_code']}\",
-                    amount: \"{$post_variables['p_amount_']}\",
-                    tax_base: \"{$post_variables['p_amount_base']}\",
-                    tax: \"{$post_variables['p_tax']}\",
+                    amount: \"{$post_variables['p_amount_']}\".toString(),
+                    tax_base: \"{$post_variables['p_amount_base']}\".toString(),
+                    tax: \"{$post_variables['p_tax']}\".toString(),
                     taxIco: \"0\",
                     country: \"{$post_variables['p_country_code']}\",
                     lang: \"{$post_variables['lang']}\",
@@ -377,14 +380,59 @@ class plgVmPaymentPayco extends vmPSPlugin {
                     email_billing: \"{$post_variables['p_billing_email']}\",
                     extra1: \"{$post_variables['p_id_factura']}\",
                     extra2: \"{$order['details']['BT']->order_pass}\",
-                    extra3: \"{$order['details']['BT']->virtuemart_order_id}\"
+                    extra3: \"{$order['details']['BT']->virtuemart_order_id}\",
+                    autoclick: \"{$autoclick}\",
+                    ip: \"{$ip}\",
+                    test: \"{$test}\".toString()
                 }
+                const apiKey = \"{$post_variables['p_public_key']}\";
+                const privateKey = \"{$post_variables['p_private_key']}\";
                 var openChekout = function () {
-                    handler.open(data);
+                        if(localStorage.getItem(\"invoicePayment\") == null){
+                        localStorage.setItem(\"invoicePayment\", data.invoice);
+                            makePayment(privateKey,apiKey,data, data.external == \"true\"?true:false)
+                        }else{
+                            if(localStorage.getItem(\"invoicePayment\") != data.invoice){
+                                localStorage.removeItem(\"invoicePayment\");
+                                localStorage.setItem(\"invoicePayment\", data.invoice);
+                                    makePayment(privateKey,apiKey,data, data.external == \"true\"?true:false)
+                            }else{
+                                makePayment(privateKey,apiKey,data, data.external == \"true\"?true:false)
+                            }
+                        }
+                }
+                var makePayment = function (privatekey, apikey, info, external) {
+                    const headers = { \"Content-Type\": \"application/json\" } ;
+                    headers['privatekey'] = privatekey;
+                    headers['apikey'] = apikey;
+                    var payment =   function (){
+                        return  fetch(\"https://cms.epayco.io/checkout/payment/session\", {
+                            method: 'POST',
+                            body: JSON.stringify(info),
+                            headers
+                        })
+                            .then(res =>  res.json())
+                            .catch(err => err);
+                    }
+                    payment()
+                        .then(session => {
+                            if(session.data.sessionId != undefined){
+                                localStorage.removeItem(\"sessionPayment\");
+                                localStorage.setItem(\"sessionPayment\", session.data.sessionId);
+                                const handlerNew = window.ePayco.checkout.configure({
+                                    sessionId: session.data.sessionId,
+                                    external: external,
+                                });
+                                handlerNew.openNew()
+                            }
+                        })
+                        .catch(error => {
+                            error.message;
+                        });
                 }
                 var bntPagar = document.getElementById(\"btn_epayco\");
                 bntPagar.addEventListener(\"click\", openChekout);
-                setTimeout(openChekout, 2000)  
+                openChekout()
             </script>
             <script src=\"https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js\"></script>
             <script>
@@ -781,6 +829,27 @@ class plgVmPaymentPayco extends vmPSPlugin {
         $cryptedParams = vmCrypt::encrypt($params);
         $cryptedParams = base64_encode($cryptedParams);
         return $cryptedParams;
+    }
+
+    private function getIp(){
+        $ipaddress = '';
+        if (isset($_SERVER['HTTP_CLIENT_IP']))
+            $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
+        else if(isset($_SERVER['HTTP_X_FORWARDED_FOR']))
+            $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
+        else if(isset($_SERVER['HTTP_X_FORWARDED']))
+            $ipaddress = $_SERVER['HTTP_X_FORWARDED'];
+        else if(isset($_SERVER['HTTP_X_CLUSTER_CLIENT_IP']))
+            $ipaddress = $_SERVER['HTTP_X_CLUSTER_CLIENT_IP'];
+        else if(isset($_SERVER['HTTP_FORWARDED_FOR']))
+            $ipaddress = $_SERVER['HTTP_FORWARDED_FOR'];
+        else if(isset($_SERVER['HTTP_FORWARDED']))
+            $ipaddress = $_SERVER['HTTP_FORWARDED'];
+        else if(isset($_SERVER['REMOTE_ADDR']))
+            $ipaddress = $_SERVER['REMOTE_ADDR'];
+        else
+            $ipaddress = 'UNKNOWN';
+        return $ipaddress;
     }
 
     private function getRetourParams($cryptedParams) {
