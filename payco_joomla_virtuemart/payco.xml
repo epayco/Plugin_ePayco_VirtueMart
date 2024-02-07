@@ -41,6 +41,7 @@
         <field type="text" name="payco_encrypt_key"  size="50" label="P_KEY" default="" description="Corresponde a la llave de autenticación en el API Rest, Proporcionado en su panel de clientes en la opción configuración." />
         <field type="spacer" default="" level="level1" />
         <field type="text" name="payco_public_key"  size="50" label="PUBLIC_KEY" default="" description="Corresponde a la llave de autenticación en el API Rest, Proporcionado en su panel de clientes en la opción configuración" />
+        <field type="text" name="payco_private_key"  size="50" label="PRIVATE_KEY" default="" description="Corresponde a la llave de autenticación en el API Rest, Proporcionado en su panel de clientes en la opción configuración" />
         <field type="spacer" default="" level="level1" />
         <field name="p_test_request" type="radio" label="Modo de pruebas" description="Eligir si usar modo de pruebas" >
             <option value="FALSE">COM_VIRTUEMART_NO</option>
