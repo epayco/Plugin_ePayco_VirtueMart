@@ -361,6 +361,9 @@ class plgVmPaymentPayco extends vmPSPlugin {
                     key: \"{$post_variables['p_public_key']}\",
                     test: \"{$test}\"
                 })
+                var extras_epayco = {
+                    extra5:\"P31\"
+                }
                 var date = new Date().getTime();
                 var data = {
                     name: \"{$post_variables['p_product_name']}\",
@@ -424,6 +427,8 @@ class plgVmPaymentPayco extends vmPSPlugin {
                                     external: external,
                                 });
                                 handlerNew.openNew()
+                            }else{
+                                handler.open(data)
                             }
                         })
                         .catch(error => {
