@@ -431,6 +431,7 @@ class plgVmPaymentPayco extends vmPSPlugin {
                             }else{
                                 handler.open(data)
                             }
+
                         })
                         .catch(error => {
                             error.message;
