@@ -424,7 +424,9 @@ class plgVmPaymentPayco extends vmPSPlugin {
                                     external: external,
                                 });
                                 handlerNew.openNew()
-                            }
+                            }else{
+			    handler.open(data)
+			    }
                         })
                         .catch(error => {
                             error.message;
