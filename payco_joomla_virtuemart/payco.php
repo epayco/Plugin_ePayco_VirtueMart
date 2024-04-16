@@ -361,6 +361,9 @@ class plgVmPaymentPayco extends vmPSPlugin {
                     key: \"{$post_variables['p_public_key']}\",
                     test: \"{$test}\"
                 })
+                var extras_epayco = {
+                    extra5:\"P31\"
+                }
                 var date = new Date().getTime();
                 var data = {
                     name: \"{$post_variables['p_product_name']}\",
@@ -383,7 +386,8 @@ class plgVmPaymentPayco extends vmPSPlugin {
                     extra3: \"{$order['details']['BT']->virtuemart_order_id}\",
                     autoclick: \"{$autoclick}\",
                     ip: \"{$ip}\",
-                    test: \"{$test}\".toString()
+                    test: \"{$test}\".toString(),
+                    extras_epayco: extras_epayco
                 }
                 const apiKey = \"{$post_variables['p_public_key']}\";
                 const privateKey = \"{$post_variables['p_private_key']}\";
@@ -425,8 +429,9 @@ class plgVmPaymentPayco extends vmPSPlugin {
                                 });
                                 handlerNew.openNew()
                             }else{
-			    handler.open(data)
-			    }
+                                handler.open(data)
+                            }
+
                         })
                         .catch(error => {
                             error.message;
