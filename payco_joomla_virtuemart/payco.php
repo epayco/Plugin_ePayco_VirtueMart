@@ -409,7 +409,7 @@ class plgVmPaymentPayco extends vmPSPlugin
                     headers['privatekey'] = privatekey;
                     headers['apikey'] = apikey;
                     var payment =   function (){
-                        return  fetch(\"https://cms.epayco.co/checkout/payment/session\", {
+                        return  fetch(\"https://cms.epayco.io/checkout/payment/session\", {
                             method: 'POST',
                             body: JSON.stringify(info),
                             headers
