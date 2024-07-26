@@ -1,0 +1,5 @@
+table { width: 640px; border: 1px #CCC solid; padding: 5px; color: #000; margin: 10px; }
+th { background-color: #CCC; border: 1px #999 solid; }
+td { border: 1px #CCC solid; padding: 4px; }
+td strong { margin-right: 20px; text-decoration: underline; }
+td img { width: 430px; height: 127px; margin-top: 5px; }
