@@ -18,7 +18,7 @@ defined('_JEXEC') or die('Direct Access to ' . basename(__FILE__) . 'is not allo
  * other free or open source software licenses.
  * @version $Id$
  *
- * 
+ *
  * Account set up >Set up > URL transaction accepted
  * http://mywebsite.com/index.php?option=com_virtuemart&view=vmplg&task=pluginresponsereceived&po=
  *
@@ -30,56 +30,65 @@ defined('_JEXEC') or die('Direct Access to ' . basename(__FILE__) . 'is not allo
  */
 
 if (!class_exists('vmPSPlugin')) {
-    require(VMPATH_PLUGINLIBS . DS . 'vmpsplugin.php');
+    //require(VMPATH_PLUGINLIBS . DS . 'vmpsplugin.php');
+    require(JPATH_VM_PLUGINS . DS . 'vmpsplugin.php');
 }
 
-class plgVmPaymentPayco extends vmPSPlugin {
+class plgVmPaymentPayco extends vmPSPlugin
+{
 
-    function __construct(& $subject, $config) {
+    function __construct(&$subject, $config)
+    {
 
         parent::__construct($subject, $config);
+
+        // Load the language file
+        $lang = JFactory::getLanguage();
+        $lang->load('plg_vmpayment_payco', JPATH_ADMINISTRATOR);
+
+        // Define the plugin parameters
         $this->_loggable = TRUE;
         $this->tableFields = array_keys($this->getTableSQLFields());
         $this->_tablepkey = 'id'; //virtuemart_kap_id';
         $this->_tableId = 'id'; //'virtuemart_kap_id';
+
+        // Set the configuration
         $varsToPush = $this->getVarsToPush();
         $this->setConfigParameterable($this->_configTableFieldName, $varsToPush);
         if (method_exists($this, 'setCryptedFields')) {
             $this->setCryptedFields(array('account'));
         }
-
     }
 
-    protected function getVmPluginCreateTableSQL() {
+    protected function getVmPluginCreateTableSQL()
+    {
         $query = "CREATE TABLE IF NOT EXISTS `epaycos` (";
         $query .= "PRIMARY KEY (`id`),
         `order_status_name` varchar(64),
         `order_status_code`	char(1)
         ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='epaycos table' AUTO_INCREMENT=1 ;";
-		
+
         $db = JFactory::getDBO();
         $db->setQuery($query);
 
         $creaTabSql = 'CREATE TABLE IF NOT EXISTS ' . $db->quoteName('#__utf8_conversion')
-        . ' (' . $db->quoteName('paycosss') . ' tinyint(4) NOT NULL DEFAULT 0'
-        . ') ENGINE=InnoDB';
+            . ' (' . $db->quoteName('paycosss') . ' tinyint(4) NOT NULL DEFAULT 0'
+            . ') ENGINE=InnoDB';
 
-        if ($db->hasUTF8mb4Support())
-        {
+        if ($db->hasUTF8mb4Support()) {
             $creaTabSql = $creaTabSql
                 . ' DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;';
-        }
-        else
-        {
+        } else {
             $creaTabSql = $creaTabSql
                 . ' DEFAULT CHARSET=utf8 DEFAULT COLLATE=utf8_unicode_ci;';
         }
 
-    $db->setQuery($creaTabSql)->execute();
+        $db->setQuery($creaTabSql)->execute();
         return $this->createTableSQL('Payment Payco Table');
     }
 
-    function getTableSQLFields() {
+    function getTableSQLFields()
+    {
 
         $query = "CREATE TABLE IF NOT EXISTS `epayco` (";
         $query .= "PRIMARY KEY (`id`),
@@ -91,21 +100,18 @@ class plgVmPaymentPayco extends vmPSPlugin {
         $db->setQuery($query);
 
         $creaTabSql = 'CREATE TABLE IF NOT EXISTS ' . $db->quoteName('#__utf8_conversion')
-        . ' (' . $db->quoteName('paycos') . ' tinyint(4) NOT NULL DEFAULT 0'
-        . ') ENGINE=InnoDB';
+            . ' (' . $db->quoteName('paycos') . ' tinyint(4) NOT NULL DEFAULT 0'
+            . ') ENGINE=InnoDB';
 
-        if ($db->hasUTF8mb4Support())
-        {
+        if ($db->hasUTF8mb4Support()) {
             $creaTabSql = $creaTabSql
                 . ' DEFAULT CHARSET=utf8mb4 DEFAULT COLLATE=utf8mb4_unicode_ci;';
-        }
-        else
-        {
+        } else {
             $creaTabSql = $creaTabSql
                 . ' DEFAULT CHARSET=utf8 DEFAULT COLLATE=utf8_unicode_ci;';
         }
 
-    $db->setQuery($creaTabSql)->execute();
+        $db->setQuery($creaTabSql)->execute();
         $SQLfields = array(
             'id'                                     => 'int(11) UNSIGNED NOT NULL AUTO_INCREMENT',
             'virtuemart_order_id'                    => 'int(1) UNSIGNED',
@@ -117,11 +123,14 @@ class plgVmPaymentPayco extends vmPSPlugin {
             'email_currency'                         => 'smallint(1)',
             'cost_per_transaction'                   => 'decimal(10,2)',
             'cost_percent_total'                     => 'decimal(10,2)',
-            'tax_id'                                 => 'smallint(1)');
+            'tax_id'                                 => 'smallint(1)'
+        );
         return $SQLfields;
     }
 
-    function plgVmConfirmedOrder($cart, $order) {
+    // Event called when selecting the payment method
+    function plgVmConfirmedOrder($cart, $order)
+    {
 
         if (!($this->_currentMethod = $this->getVmPluginMethod($order['details']['BT']->virtuemart_paymentmethod_id))) {
             return NULL; // Another method was selected, do nothing
@@ -132,7 +141,7 @@ class plgVmPaymentPayco extends vmPSPlugin {
         }
 
         $this->getPaymentCurrency($this->_currentMethod);
-        $this->_p_test_request =$this->_currentMethod->p_test_request;
+        $this->_p_test_request = $this->_currentMethod->p_test_request;
         $this->logInfo('plgVmConfirmedOrder order number: ' . $order['details']['BT']->order_number, 'message');
         $subscribe_id = NULL;
 
@@ -164,27 +173,29 @@ class plgVmPaymentPayco extends vmPSPlugin {
             $nameproduct .= ', etc';
         }
 
-        $p_amount_float = round(floatval($order['details']['BT']->order_total),2);
-        $iva =round(floatval($order['details']['BT']->order_billTaxAmount),2);
+        $p_amount_float = round(floatval($order['details']['BT']->order_total), 2);
+        $iva = round(floatval($order['details']['BT']->order_billTaxAmount), 2);
         $baseDevolucionIva = $p_amount_float - $iva;
-        if ($this->_currentMethod->p_test_request=="TRUE") {
-            $test= "true";
-        }else{
-            $test= "false";
+        if ($this->_currentMethod->p_test_request == "TRUE") {
+            $test = "true";
+        } else {
+            $test = "false";
         }
 
-        if ($this->_currentMethod->p_external_request=="TRUE") {
-            $external= "false";
-        }else{
-            $external= "true";
+        if ($this->_currentMethod->p_external_request == "TRUE") {
+            $external = "false";
+        } else {
+            $external = "true";
         }
-        $autoclick="true";
-        $ip=$this->getIp();
-        $orderstatusurl = (JROUTE::_(JURI::root() ."index.php?option=com_virtuemart&view=orders&layout=details&order_number=".$order['details']['BT']->order_number."&order_pass=".$order['details']['BT']->order_pass, true) . '&');
+        $payMethod = $order['details']['BT']->virtuemart_paymentmethod_id;
+        $autoclick = "true";
+        $ip = $this->getIp();
         $currency_model = VmModel::getModel('currency');
-        $currency_payment=$currency_model->getCurrency()->currency_code_3;
+        $currency_payment = $currency_model->getCurrency()->currency_code_3;
         $retourParams = $this->setRetourParams($order, $this->getContext());
-        $post_variables = Array(
+        $responseUrl = JURI::base() . "index.php?option=com_virtuemart&amp;" .
+			"view=pluginresponse&amp;task=pluginresponsereceived&amp;paymethod=" . $payMethod;
+        $post_variables = array(
             'SOCIETE' => $order['details']['BT']->company,
             'NOM' => $order['details']['BT']->last_name,
             'PRENOM' => $name,
@@ -196,37 +207,46 @@ class plgVmPaymentPayco extends vmPSPlugin {
             'p_billing_email' => $order['details']['BT']->email,
             'MODULE' => 'VirtueMart',
             'MODULE_VERSION' => '3.6.10',
-            'external'=>$external,
-            'p_description'     => 'ORDEN DE COMPRA # '.$order['details']['BT']->order_number,
+            'external' => $external,
+            'p_description'     => 'ORDEN DE COMPRA # ' . $order['details']['BT']->order_number,
             'p_cust_id_cliente' => $this->_currentMethod->payco_user_id,
             'p_product_name' => $nameproduct,
             'p_id_factura' => $order['details']['BT']->order_number,
-            'p_country_code'	=> ShopFunctions::getCountryByID ($order['details']['ST']->virtuemart_country_id, 'country_2_code'),
+            'p_country_code'    => ShopFunctions::getCountryByID($order['details']['ST']->virtuemart_country_id, 'country_2_code'),
             'extra_3'          => $order['details']['BT']->virtuemart_order_id,
             'p_amount_'          => $p_amount_float,
             'p_tax'             => $iva,
-            'p_amount_base' 	=> $baseDevolucionIva,
+            'p_amount_base'     => $baseDevolucionIva,
             'p_currency_code'   => $currency_payment,
-            'p_url_status'	=> 	(JROUTE::_ (JURI::root () . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginnotification&tmpl=component')),
+            'p_url_status'    => (JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginnotification&tmpl=component')),
             'p_public_key'      => $this->_currentMethod->payco_public_key,
             'p_private_key'      => $this->_currentMethod->payco_private_key,
             'p_test_request'    => $test,
-            'notification_url' => (JROUTE::_ (JURI::root () .'index.php?option=com_virtuemart&view=vmplg&task=pluginNotification&tmpl=component&on=' . $order['details']['BT']->order_number . '&pm=' . $order['details']['BT']->virtuemart_paymentmethod_id . '&o_id='.$order['details']['BT']->virtuemart_order_id)),
-            'p_confirmation_url' =>  JURI::base() .'plugins/vmpayment/payco/payco/' .'confirmacion.php',
-            'p_url_respuesta' =>  JURI::base() .'plugins/vmpayment/payco/payco/' .'response.php',
-            'lang' =>  $this->_currentMethod->epayco_lang
+            'notification_url' => (JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=vmplg&task=pluginNotification&tmpl=component&on=' . $order['details']['BT']->order_number . '&pm=' . $order['details']['BT']->virtuemart_paymentmethod_id . '&o_id=' . $order['details']['BT']->virtuemart_order_id)),
+            'lang' =>  $this->_currentMethod->epayco_lang,
+            'responseUrl' => $responseUrl
         );
-            if($this->_currentMethod->epayco_lang == "en"){
-                $button = 'plugins/vmpayment/payco/payco/images/Boton-color-Ingles.png';
-                $msgEpaycoCheckout = '<span class="animated-points">Loading payment methods</span>
-                <br><small class="epayco-subtitle"> If they do not load automatically, click on the "Pay with ePayco" button</small>';
-            }else{
-                $button = 'plugins/vmpayment/payco/payco/images/Boton-color-espanol.png';
-                $msgEpaycoCheckout = '<span class="animated-points">Cargando métodos de pago</span>
-                <br><small class="epayco-subtitle"> Si no se cargan automáticamente, de clic en el botón "Pagar con ePayco</small>';
-            }
+            
+        $paymentData = array(
+            'order_number' => $order['details']['BT']->order_number,
+            'virtuemart_order_id' => $order['details']['BT']->virtuemart_order_id,
+            'payment_name' => $this->renderPluginName($this->_currentMethod),
+            'payment_order_total' => $order['details']['BT']->order_total,
+            'payment_currency' => $currency_payment
+        );
+        //$this->storePSPluginInternalData($paymentData);
 
-            $js = '<style>
+        if ($this->_currentMethod->epayco_lang == "en") {
+            $button = JURI::base() . 'plugins/vmpayment/payco/payco/images/Boton-color-Ingles.png';
+            $msgEpaycoCheckout = '<span class="animated-points">Loading payment methods</span>
+                <br><small class="epayco-subtitle"> If they do not load automatically, click on the "Pay with ePayco" button</small>';
+        } else {
+            $button = JURI::base() . 'plugins/vmpayment/payco/payco/images/Boton-color-espanol.png';
+            $msgEpaycoCheckout = '<span class="animated-points">Cargando métodos de pago</span>
+                <br><small class="epayco-subtitle"> Si no se cargan automáticamente, de clic en el botón "Pagar con ePayco</small>';
+        }
+
+        $js = '<style>
             .epayco-title{
                 max-width: 900px;
                 display: block;
@@ -347,15 +367,15 @@ class plgVmPaymentPayco extends vmPSPlugin {
                 <div class=\"loading\"></div>
             </div>
             <p style=\"text-align: center;\" class=\"epayco-title\" >
-            ".$msgEpaycoCheckout."
+            \"{$msgEpaycoCheckout}\"
             </p>
             <center>
                 <a id=\"btn_epayco\" style=\"text-align: center;\" href=\"#\">
-                    <img src=\".$button.\">
+                    <img src=\"{$button}\">
                 </a>
             </center>
         <form class=\"text-center\">
-            <script src=\"https://checkout.epayco.co/checkout.js\"></script>
+            <script src=\"https://epayco-checkout-testing.s3.amazonaws.com/checkout.preprod.js\"></script>
             <script>
                 var handler = ePayco.checkout.configure({
                     key: \"{$post_variables['p_public_key']}\",
@@ -377,13 +397,14 @@ class plgVmPaymentPayco extends vmPSPlugin {
                     country: \"{$post_variables['p_country_code']}\",
                     lang: \"{$post_variables['lang']}\",
                     external: \"{$post_variables['external']}\",
-                    confirmation: \"{$post_variables['p_confirmation_url']}\",
-                    response: \"{$post_variables['p_url_respuesta']}\",
+                    confirmation: \"{$post_variables['notification_url']}\",
+                    response: \"{$post_variables['notification_url']}\",
                     address_billing: \"{$post_variables['p_billing_adress']}\",
                     email_billing: \"{$post_variables['p_billing_email']}\",
                     extra1: \"{$post_variables['p_id_factura']}\",
                     extra2: \"{$order['details']['BT']->order_pass}\",
                     extra3: \"{$order['details']['BT']->virtuemart_order_id}\",
+                    extra4: \"{$payMethod}\",
                     autoclick: \"{$autoclick}\",
                     ip: \"{$ip}\",
                     test: \"{$test}\".toString(),
@@ -399,7 +420,7 @@ class plgVmPaymentPayco extends vmPSPlugin {
                             if(localStorage.getItem(\"invoicePayment\") != data.invoice){
                                 localStorage.removeItem(\"invoicePayment\");
                                 localStorage.setItem(\"invoicePayment\", data.invoice);
-                                    makePayment(privateKey,apiKey,data, data.external == \"true\"?true:false)
+                                makePayment(privateKey,apiKey,data, data.external == \"true\"?true:false)
                             }else{
                                 makePayment(privateKey,apiKey,data, data.external == \"true\"?true:false)
                             }
@@ -410,7 +431,7 @@ class plgVmPaymentPayco extends vmPSPlugin {
                     headers['privatekey'] = privatekey;
                     headers['apikey'] = apikey;
                     var payment =   function (){
-                        return  fetch(\"https://cms.epayco.co/checkout/payment/session\", {
+                        return  fetch(\"https://cms.epayco.io/checkout/payment/session\", {
                             method: 'POST',
                             body: JSON.stringify(info),
                             headers
@@ -459,11 +480,12 @@ class plgVmPaymentPayco extends vmPSPlugin {
         $this->restorStock($post_variables['p_id_factura']);
         $cart = VirtueMartCart::getCart();
         $cart->emptyCart();
-        vRequest::setVar ('html', $js.$html);
+        vRequest::setVar('html', $js . $html);
     }
 
 
-    function plgVmgetPaymentCurrency($virtuemart_paymentmethod_id, &$paymentCurrencyId) {
+    function plgVmgetPaymentCurrency($virtuemart_paymentmethod_id, &$paymentCurrencyId)
+    {
         if (!($method = $this->getVmPluginMethod($virtuemart_paymentmethod_id))) {
             return NULL; // Another method was selected, do nothing
         }
@@ -476,12 +498,14 @@ class plgVmPaymentPayco extends vmPSPlugin {
     }
 
 
-    function redirectToCart() {
+    function redirectToCart()
+    {
         $app = JFactory::getApplication();
         $app->redirect(JRoute::_('index.php?option=com_virtuemart&view=cart&lg=&Itemid=' . vRequest::getInt('Itemid'), false), vmText::_('VMPAYMENT_KLIKANDPAY_ERROR_TRY_AGAIN'));
     }
 
-    function plgVmOnUserPaymentCancel() {
+    function plgVmOnUserPaymentCancel()
+    {
         if (!class_exists('VirtueMartModelOrders')) {
             require(VMPATH_ADMIN . DS . 'models' . DS . 'orders.php');
         }
@@ -515,77 +539,139 @@ class plgVmPaymentPayco extends vmPSPlugin {
      * None
      * @author Valerie Isaksen
      */
-    function plgVmOnPaymentNotification() {
+    function plgVmOnPaymentNotification()
+    {
 
         if (!class_exists('VirtueMartModelOrders')) {
             require(VMPATH_ADMIN . DS . 'models' . DS . 'orders.php');
         }
 
-        $po = vRequest::getString('po', '');
-        if (!$po) {
-            return;
+        $mb_data = vRequest::getRequest();
+        if (isset($mb_data['ref_payco'])) {
+            $url = 'https://secure.epayco.io/validation/v1/reference/'.$mb_data['ref_payco'];
+            $responseData = $this->agafa_dades($url,false,$this->goter());
+            $jsonData = @json_decode($responseData, true);
+            $validationData = $jsonData['data'];
+            $x_id_invoice = $validationData['x_id_invoice'];
+            $x_ref_payco = $validationData['x_ref_payco'];
+            $x_extra2 = $validationData['x_extra2'];
+            $x_amount = $validationData['x_amount'];
+            $x_transaction_id = $validationData['x_transaction_id'];
+            $x_currency_code = $validationData['x_currency_code'];
+            $x_signature = $validationData['x_signature'];
+            $x_cod_transaction_state = $validationData['x_cod_transaction_state'];
+        }
+       
+        
+        if (isset($mb_data['x_id_invoice'])) {
+           $x_id_invoice = $mb_data['x_id_invoice'];
+           $x_ref_payco = $mb_data['x_ref_payco'];
+           $x_extra2 = $mb_data['x_extra2'];
+           $x_amount = $mb_data['x_amount'];
+           $x_transaction_id = $mb_data['x_transaction_id'];
+           $x_currency_code = $mb_data['x_currency_code'];
+           $x_signature = $mb_data['x_signature'];
+           $x_cod_transaction_state = $mb_data['x_cod_transaction_state'];
         }
 
-            $mb_data = vRequest::getRequest();
-        if (!isset($mb_data['x_id_invoice'])) {
-            return;
-        }
-
-        $order_number2 = $mb_data['x_id_invoice'];
-        $retourParams = $this->getRetourParams($po);
-        $virtuemart_paymentmethod_id = $retourParams['virtuemart_paymentmethod_id'];
-        $order_number = $retourParams['order_number'];
-        $context = $retourParams['context'];
-        $this->_currentMethod = $this->getVmPluginMethod($virtuemart_paymentmethod_id);
-        if (!$this->selectedThisElement($this->_currentMethod->payment_element)) {
-            return;
-        }
-        $this->debugLog(var_export($retourParams, true), 'plgVmOnPaymentNotification getRetourParams', 'debug', false);
-
-        if (!($virtuemart_order_id = VirtueMartModelOrders::getOrderIdByOrderNumber($order_number))) {
+        $virtuemart_paymentmethod_id = $mb_data['pm'];
+        $order_number = $mb_data['on'];
+        //$this->debugLog(var_export($retourParams, true), 'plgVmOnPaymentNotification getRetourParams', 'debug', false);
+        $virtuemart_order_id = VirtueMartModelOrders::getOrderIdByOrderNumber($order_number);
+ 
+        if (!($virtuemart_order_id)) {
             return FALSE;
         }
-
-        if (!($payments = $this->getDatasByOrderId($virtuemart_order_id))) {
-            $this->debugLog('no payments found', 'getDatasByOrderId', 'debug', false);
-            return FALSE;
-        }
-
         $orderModel = VmModel::getModel('orders');
-        $order = $orderModel->getOrder($virtuemart_order_id);
-        return TRUE;
+        $orderDetails = $orderModel->getOrder($virtuemart_order_id);
+        if ($orderDetails) {
+            echo 'Orden encontrada.';
+            if (floatval($orderDetails['details']['BT']->order_total) == floatval($x_amount)) {
+                $validation = true;
+            } else {
+                $validation = false;
+            }
+            $method = $this->getVmPluginMethod($orderDetails['details']['BT']->virtuemart_paymentmethod_id);
+            $signature = hash(
+                'sha256',
+                trim($method->payco_user_id) . '^'
+                    . trim($method->payco_encrypt_key) . '^'
+                    . $x_ref_payco . '^'
+                    . $x_transaction_id . '^'
+                    . $x_amount . '^'
+                    . $x_currency_code
+            );
+            switch ($x_cod_transaction_state) {
+                case 1:
+                    $status = 'C';
+                 break;
+                case 2:
+                    $status = 'X';
+                break;
+                case 3:
+                    $status = 'P';
+                break;
+                default:
+                    $status = 'P';
+                break;
+            }
+            $nb_history = count($orderDetails['history']);
+            $orderDetails['customer_notified']=1;
+            $orderDetails['order_status'] = $status;
+            $customer_total = (number_format((float)$order['details']['BT']->order_total, 2, '.', ''));
+            $orderDetails['comments'] = vmText::sprintf('VMPAYMENT_TCO_PAYMENT_STATUS_CONFIRMED', $order_number);
+            $orderDetails['virtuemart_order_id'] = $virtuemart_order_id;
+            // Guardar los cambios
+            try{
+                //$result = $orderModel->updateOrder($orderDetails);
+                $result = $orderModel->updateStatusForOneOrder($virtuemart_order_id, $orderDetails, true);
+            }catch(\Exception $e){
+                die($e->getMessage());
+            }
+            if (!$result) {
+                die('no se pudo actaulziar la orden.');
+            }
+        } else {
+            die('Orden no encontrada.');
+        }
+        $app = JFactory::getApplication();
+        $responseUrl = JURI::base() . "index.php?option=com_virtuemart&amp;view=orders&amp;layout=details&amp;order_number=" . $order_number .
+			"&order_pass=".$x_extra2."&";
+        $app->redirect($responseUrl);
     }
-    public function restorStock($refVenta){
+    
+    public function restorStock($refVenta)
+    {
         $db = JFactory::getDBO();
         $pf = $db->getPrefix();
-        $q = 'SELECT * FROM `' . $pf.'virtuemart_orders' . '` WHERE ';
-        $q .= ' `order_number` = "' . (string)$refVenta.'"';
+        $q = 'SELECT * FROM `' . $pf . 'virtuemart_orders' . '` WHERE ';
+        $q .= ' `order_number` = "' . (string)$refVenta . '"';
         $db->setQuery($q);
         $sql_order = $db->loadObjectList();
-        if($sql_order){
-            $orderProduct_query = "SELECT * FROM ".$pf."virtuemart_order_items WHERE virtuemart_order_id = '".(int)$sql_order[0]->virtuemart_order_id."'";
+        if ($sql_order) {
+            $orderProduct_query = "SELECT * FROM " . $pf . "virtuemart_order_items WHERE virtuemart_order_id = '" . (int)$sql_order[0]->virtuemart_order_id . "'";
             $db->setQuery($orderProduct_query);
             $orderProductQuery = $db->loadObjectList();
             $productsData = [];
-            if($orderProductQuery){
+            if ($orderProductQuery) {
                 foreach ($orderProductQuery as $product_item) {
-                    $product_query = "SELECT * FROM ".$pf."virtuemart_products WHERE virtuemart_product_id = '".(int)$product_item->virtuemart_product_id."'";
+                    $product_query = "SELECT * FROM " . $pf . "virtuemart_products WHERE virtuemart_product_id = '" . (int)$product_item->virtuemart_product_id . "'";
                     $db->setQuery($product_query);
                     $productQuery = $db->loadObjectList();
-                    if($productQuery){
+                    if ($productQuery) {
                         foreach ($productQuery as $product_data) {
-                            $stockToUpdate = ((int)$product_data->product_in_stock-(int)$product_item->product_quantity);
-                            $products['id']=$product_data->virtuemart_product_id;
-                            $products['quantity']=$stockToUpdate;
+                            $stockToUpdate = ((int)$product_data->product_in_stock - (int)$product_item->product_quantity);
+                            $products['id'] = $product_data->virtuemart_product_id;
+                            $products['quantity'] = $stockToUpdate;
                             $productsData[] = $products;
                         }
                     }
                 }
             }
         }
-        foreach ($productsData as $miProduct){
-            $sqlProduct_ = "UPDATE ".$pf."virtuemart_products SET product_in_stock ='".$miProduct['quantity']."'
-              WHERE virtuemart_product_id = '".(int)$miProduct['id']."'";
+        foreach ($productsData as $miProduct) {
+            $sqlProduct_ = "UPDATE " . $pf . "virtuemart_products SET product_in_stock ='" . $miProduct['quantity'] . "'
+              WHERE virtuemart_product_id = '" . (int)$miProduct['id'] . "'";
             $db->setQuery($sqlProduct_)->execute();
         }
     }
@@ -594,7 +680,8 @@ class plgVmPaymentPayco extends vmPSPlugin {
      *
      * @see components/com_virtuemart/helpers/vmPSPlugin::plgVmOnShowOrderBEPayment()
      */
-    function plgVmOnShowOrderBEPayment($virtuemart_order_id, $payment_method_id) {
+    function plgVmOnShowOrderBEPayment($virtuemart_order_id, $payment_method_id)
+    {
         if (!$this->selectedThisByMethodId($payment_method_id)) {
             return NULL; // Another method was selected, do nothing
         }
@@ -623,13 +710,14 @@ class plgVmPaymentPayco extends vmPSPlugin {
                     $html .= $this->getHtmlRowBE('PAYCO_PAYMENT_EMAIL_CURRENCY', shopFunctions::getCurrencyByID($payment->email_currency, 'currency_code_3'));
                 }
                 $first = FALSE;
-            } 
+            }
         }
         $html .= '</table>' . "\n";
         return $html;
     }
 
-    private function rmspace($buffer) {
+    private function rmspace($buffer)
+    {
         return preg_replace('~>\s*\n\s*<~', '><', $buffer);
     }
 
@@ -645,15 +733,16 @@ class plgVmPaymentPayco extends vmPSPlugin {
      * @return true: if the conditions are fulfilled, false otherwise
      *
      */
-    protected function checkConditions($cart, $method, $cart_prices) {
+    protected function checkConditions($cart, $method, $cart_prices)
+    {
 
         $this->_currentMethod = $method;
         $this->convert_condition_amount($method);
         $address = $cart->getST();
         $amount = $this->getCartAmount($cart_prices);
-        $amount_cond = ($amount >= $this->_currentMethod->min_amount AND $amount <= $this->_currentMethod->max_amount
-            OR
-            ($this->_currentMethod->min_amount <= $amount AND ($this->_currentMethod->max_amount == 0)));
+        $amount_cond = ($amount >= $this->_currentMethod->min_amount and $amount <= $this->_currentMethod->max_amount
+            or
+            ($this->_currentMethod->min_amount <= $amount and ($this->_currentMethod->max_amount == 0)));
         $countries = array();
         if (!empty($method->countries)) {
             if (!is_array($method->countries)) {
@@ -685,7 +774,8 @@ class plgVmPaymentPayco extends vmPSPlugin {
     }
 
 
-    function convert_condition_amount(&$method) {
+    function convert_condition_amount(&$method)
+    {
         $method->min_amount = (float)str_replace(',', '.', $method->min_amount);
         $method->max_amount = (float)str_replace(',', '.', $method->max_amount);
     }
@@ -702,7 +792,8 @@ class plgVmPaymentPayco extends vmPSPlugin {
      * @author Valérie Isaksen
      *
      */
-    function plgVmOnStoreInstallPaymentPluginTable($jplugin_id) {
+    function plgVmOnStoreInstallPaymentPluginTable($jplugin_id)
+    {
         return $this->onStoreInstallPluginTable($jplugin_id);
     }
 
@@ -717,7 +808,8 @@ class plgVmPaymentPayco extends vmPSPlugin {
      * @return null if the payment was not selected, true if the data is valid, error message if the data is not vlaid
      *
      */
-    public function plgVmOnSelectCheckPayment(VirtueMartCart $cart, &$msg) {
+    public function plgVmOnSelectCheckPayment(VirtueMartCart $cart, &$msg)
+    {
         if (!($this->_currentMethod = $this->getVmPluginMethod($cart->virtuemart_paymentmethod_id))) {
             return NULL; // Another method was selected, do nothing
         }
@@ -739,7 +831,8 @@ class plgVmPaymentPayco extends vmPSPlugin {
      *
      * @author Valerie Isaksen
      */
-    public function plgVmDisplayListFEPayment(VirtueMartCart $cart, $selected = 0, &$htmlIn) {
+    public function plgVmDisplayListFEPayment(VirtueMartCart $cart, $selected = 0, &$htmlIn)
+    {
         if ($this->getPluginMethods($cart->vendorId) === 0) {
             if (empty($this->_name)) {
                 $app = JFactory::getApplication();
@@ -750,29 +843,31 @@ class plgVmPaymentPayco extends vmPSPlugin {
             }
         }
         $method_name = $this->_psType . '_name';
-        $idN = 'virtuemart_'.$this->_psType.'method_id';
+        $idN = 'virtuemart_' . $this->_psType . 'method_id';
         $htmla = array();
         $html = '';
         foreach ($this->methods as $this->_currentMethod) {
             if ($this->checkConditions($cart, $this->_currentMethod, $cart->cartPrices)) {
-                $cartPrices=$cart->cartPrices;
+                $cartPrices = $cart->cartPrices;
                 $methodSalesPrice = $this->setCartPrices($cart, $cartPrices, $this->_currentMethod);
                 $this->_currentMethod->$method_name = $this->renderPluginName($this->_currentMethod);
-                $html = $this->getPluginHtml($this->_currentMethod, $selected, $methodSalesPrice);  
-                $html .= '<span class="vmpayment_description">'.$this->_currentMethod->payment_desc.'</span>';
-                $html .= '<br>
-                <span class="vmpayment_cardinfo">
-                    <img src="https://multimedia.epayco.co/epayco-landing/btns/epayco-logo-fondo-oscuro-lite.png"  width="200px" style="padding-left: 26px;">
-                </span>
-                ';  $htmla[] = $html;
+                $html = $this->getPluginHtml($this->_currentMethod, $selected, $methodSalesPrice);
+                $html .= '<span class="vmpayment_description">' . $this->_currentMethod->payment_desc . '</span>';
+                $html .= '<br>';
+                $html .= '<span class="vmpayment_cardinfo">';
+                $html .= '<img src="./plugins/vmpayment/payco/payco/epayco.png" alt="ePaycoLogo" width="200px" style="padding-left: 26px;"/>';
+                $html .= '</span>';
+                $htmla[] = $html;
             }
         }
+
         $htmlIn[] = $htmla;
         return TRUE;
     }
 
 
-    public function plgVmonSelectedCalculatePricePayment(VirtueMartCart $cart, array &$cart_prices, &$cart_prices_name) {
+    public function plgVmonSelectedCalculatePricePayment(VirtueMartCart $cart, array &$cart_prices, &$cart_prices_name)
+    {
         return $this->onSelectedCalculatePrice($cart, $cart_prices, $cart_prices_name);
     }
 
@@ -787,7 +882,8 @@ class plgVmPaymentPayco extends vmPSPlugin {
      * @return null if no plugin was found, 0 if more then one plugin was found,  virtuemart_xxx_id if only one plugin is found
      *
      */
-    function plgVmOnCheckAutomaticSelectedPayment(VirtueMartCart $cart, array $cart_prices = array()) {
+    function plgVmOnCheckAutomaticSelectedPayment(VirtueMartCart $cart, array $cart_prices = array())
+    {
         return $this->onCheckAutomaticSelected($cart, $cart_prices);
     }
 
@@ -801,7 +897,8 @@ class plgVmPaymentPayco extends vmPSPlugin {
      * @author Max Milbers
      * @author Valerie Isaksen
      */
-    public function plgVmOnShowOrderFEPayment($virtuemart_order_id, $virtuemart_paymentmethod_id, &$payment_name) {
+    public function plgVmOnShowOrderFEPayment($virtuemart_order_id, $virtuemart_paymentmethod_id, &$payment_name)
+    {
         $this->onShowOrderFE($virtuemart_order_id, $virtuemart_paymentmethod_id, $payment_name);
     }
 
@@ -815,19 +912,23 @@ class plgVmPaymentPayco extends vmPSPlugin {
      * @return mixed Null when for payment methods that were not selected, text (HTML) otherwise
      * @author Valerie Isaksen
      */
-    function plgVmonShowOrderPrintPayment($order_number, $method_id) {
+    function plgVmonShowOrderPrintPayment($order_number, $method_id)
+    {
         return $this->onShowOrderPrint($order_number, $method_id);
     }
 
-    function plgVmDeclarePluginParamsPaymentVM3( &$data) {
+    function plgVmDeclarePluginParamsPaymentVM3(&$data)
+    {
         return $this->declarePluginParams('payment', $data);
     }
 
-    function plgVmSetOnTablePluginParamsPayment($name, $id, &$table) {
+    function plgVmSetOnTablePluginParamsPayment($name, $id, &$table)
+    {
         return $this->setOnTablePluginParams($name, $id, $table);
     }
 
-    private function setRetourParams($order, $context) {
+    private function setRetourParams($order, $context)
+    {
         $params = $order['details']['BT']->virtuemart_paymentmethod_id . ':' . $order['details']['BT']->order_number . ':' . $context;
         if (!class_exists('vmCrypt')) {
             require(VMPATH_ADMIN . DS . 'helpers' . DS . 'vmcrypt.php');
@@ -837,28 +938,30 @@ class plgVmPaymentPayco extends vmPSPlugin {
         return $cryptedParams;
     }
 
-    private function getIp(){
+    private function getIp()
+    {
         $ipaddress = '';
         if (isset($_SERVER['HTTP_CLIENT_IP']))
             $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
-        else if(isset($_SERVER['HTTP_X_FORWARDED_FOR']))
+        else if (isset($_SERVER['HTTP_X_FORWARDED_FOR']))
             $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
-        else if(isset($_SERVER['HTTP_X_FORWARDED']))
+        else if (isset($_SERVER['HTTP_X_FORWARDED']))
             $ipaddress = $_SERVER['HTTP_X_FORWARDED'];
-        else if(isset($_SERVER['HTTP_X_CLUSTER_CLIENT_IP']))
+        else if (isset($_SERVER['HTTP_X_CLUSTER_CLIENT_IP']))
             $ipaddress = $_SERVER['HTTP_X_CLUSTER_CLIENT_IP'];
-        else if(isset($_SERVER['HTTP_FORWARDED_FOR']))
+        else if (isset($_SERVER['HTTP_FORWARDED_FOR']))
             $ipaddress = $_SERVER['HTTP_FORWARDED_FOR'];
-        else if(isset($_SERVER['HTTP_FORWARDED']))
+        else if (isset($_SERVER['HTTP_FORWARDED']))
             $ipaddress = $_SERVER['HTTP_FORWARDED'];
-        else if(isset($_SERVER['REMOTE_ADDR']))
+        else if (isset($_SERVER['REMOTE_ADDR']))
             $ipaddress = $_SERVER['REMOTE_ADDR'];
         else
             $ipaddress = 'UNKNOWN';
         return $ipaddress;
     }
 
-    private function getRetourParams($cryptedParams) {
+    private function getRetourParams($cryptedParams)
+    {
         if (!class_exists('vmCrypt')) {
             require(VMPATH_ADMIN . DS . 'helpers' . DS . 'vmcrypt.php');
         }
@@ -872,13 +975,15 @@ class plgVmPaymentPayco extends vmPSPlugin {
     }
 
 
-    private function getContext() {
+    private function getContext()
+    {
         $session = JFactory::getSession();
         return $session->getId();
     }
 
 
-    private function isValidContext($context) {
+    private function isValidContext($context)
+    {
         if ($this->getContext() == $context) {
             return true;
         }
@@ -886,7 +991,8 @@ class plgVmPaymentPayco extends vmPSPlugin {
     }
 
 
-    function getOrderBEFields() {
+    function getOrderBEFields()
+    {
         $fields = array('RESPONSE', 'NUMXKP', 'SCOREXKP', 'TRANSACTIONID', 'AUTHID');
         return $fields;
     }
@@ -898,7 +1004,8 @@ class plgVmPaymentPayco extends vmPSPlugin {
      * @param bool $echo
      * @param bool $doVmDebug
      */
-    public function debugLog($message, $title = '', $type = 'message', $echo = false, $doVmDebug = false) {
+    public function debugLog($message, $title = '', $type = 'message', $echo = false, $doVmDebug = false)
+    {
         if ($this->_currentMethod->debug) {
             $this->debug($message, $title, true);
         }
@@ -909,7 +1016,8 @@ class plgVmPaymentPayco extends vmPSPlugin {
         parent::debugLog($message, $title, $type, $doVmDebug);
     }
 
-    public function debug($subject, $title = '', $echo = true) {
+    public function debug($subject, $title = '', $echo = true)
+    {
         $debug = '<div style="display:block; margin-bottom:5px; border:1px solid red; padding:5px; text-align:left; font-size:10px;white-space:nowrap; overflow:scroll;">';
         $debug .= ($title) ? '<br /><strong>' . $title . ':</strong><br />' : '';
         if (is_array($subject)) {
@@ -923,5 +1031,41 @@ class plgVmPaymentPayco extends vmPSPlugin {
         } else {
             return $debug;
         }
+    }
+    
+    function agafa_dades($url) {
+        if (function_exists('curl_init')) {
+            $ch = curl_init();
+            $timeout = 5;
+            $user_agent='Mozilla/5.0 (Windows NT 6.1; rv:8.0) Gecko/20100101 Firefox/8.0';
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+            curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
+            curl_setopt($ch, CURLOPT_HEADER, 0);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
+            curl_setopt($ch,CURLOPT_TIMEOUT,$timeout);
+            curl_setopt($ch,CURLOPT_MAXREDIRS,10);
+            $data = curl_exec($ch);
+            curl_close($ch);
+            return $data;
+        }else{
+            $data =  @file_get_contents($url);
+            return $data;
+        }
+    }
+    
+    function goter(){
+        $context = stream_context_create(array(
+            'http' => array(
+                'method' => 'POST',
+                'header' => 'Content-Type: application/x-www-form-urlencoded',
+                'protocol_version' => 1.1,
+                'timeout' => 10,
+                'ignore_errors' => true
+            )
+        ));
     }
 }
