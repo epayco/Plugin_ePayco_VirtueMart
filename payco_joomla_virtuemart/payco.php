@@ -855,7 +855,7 @@ class plgVmPaymentPayco extends vmPSPlugin
                 $html .= '<span class="vmpayment_description">' . $this->_currentMethod->payment_desc . '</span>';
                 $html .= '<br>';
                 $html .= '<span class="vmpayment_cardinfo">';
-                $html .= '<img src="./plugins/vmpayment/payco/payco/epayco.png" alt="ePaycoLogo" width="200px" style="padding-left: 26px;"/>';
+                $html .= '<img src="./plugins/vmpayment/payco/payco/epayco.png" alt="ePaycoLogo" width="550px" style="padding-left: 10px;"/>';
                 $html .= '</span>';
                 $htmla[] = $html;
             }
