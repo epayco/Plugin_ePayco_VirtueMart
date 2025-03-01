@@ -459,6 +459,25 @@ class plgVmPaymentPayco extends vmPSPlugin
                     if($orderStatus !== $status){
                         //$result = $orderModel->updateOrder($orderDetails);
                         $result = $orderModel->updateStatusForOneOrder($order_id, $orderDetails, true);
+                        if($status=='X'){
+                            //reponer inventario
+                            $db = JFactory::getDbo();
+
+                            foreach ($orderDetails['items'] as $item) {
+                                $productId = $item->virtuemart_product_id;
+                                $cantidadVendida = $item->product_quantity;
+
+                                // Sumar del stock
+                                $query = $db->getQuery(true)
+                                    ->update($db->quoteName('#__virtuemart_products'))
+                                    ->set($db->quoteName('product_in_stock') . ' = ' . $db->quoteName('product_in_stock') . ' + ' . (int) $cantidadVendida)
+                                    ->where($db->quoteName('virtuemart_product_id') . ' = ' . (int) $productId);
+
+                                $db->setQuery($query);
+                                $db->execute();
+                            }
+
+                        }
                         if (!$result) {
                             die('no se pudo actualziar la orden.');
                         }
