@@ -1,9 +1,0 @@
-<Files confirmaciones.log>
-Order allow,deny
-Deny from all
-</Files>
-
-<Limit GET POST PUT>
- order deny,allow
- deny from all
-</Limit>
