@@ -208,8 +208,6 @@ class plgVmPaymentPayco extends vmPSPlugin
      */
     function plgVmOnShowOrderBEPayment($virtuemart_order_id, $payment_method_id)
     {
-        var_dump("plgVmOnShowOrderBEPayment");
-        die();
         if (!$this->selectedThisByMethodId($payment_method_id)) {
             return NULL; // Another method was selected, do nothing
         }
@@ -326,7 +324,7 @@ class plgVmPaymentPayco extends vmPSPlugin
 
         $is_reditect = false;
         if (isset($mb_data['ref_payco'])) {
-            $url = 'https://secure.epayco.co/validation/v1/reference/'.$mb_data['ref_payco'];
+            $url = 'https://secure.epayco.io/validation/v1/reference/'.$mb_data['ref_payco'];
             $responseData = $this->agafa_dades($url,false,$this->goter());
             $jsonData = @json_decode($responseData, true);
             $validationData = $jsonData['data'];
@@ -728,7 +726,6 @@ class plgVmPaymentPayco extends vmPSPlugin
     }
 
 
-
     public function plgVmonSelectedCalculatePricePayment(VirtueMartCart $cart, array &$cart_prices, &$cart_prices_name)
     {
         return $this->onSelectedCalculatePrice($cart, $cart_prices, $cart_prices_name);
@@ -873,7 +870,6 @@ class plgVmPaymentPayco extends vmPSPlugin
             return $debug;
         }
     }
-
     function agafa_dades($url) {
         if (function_exists('curl_init')) {
             $ch = curl_init();
