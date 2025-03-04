@@ -35,7 +35,7 @@ class  EpaycoPaymentPlugin extends AbstractPaymentPlugin
         }
 
         $this->getPaymentCurrency($this->_currentMethod);
-        $this->_p_test_request = $this->_currentMethod->p_test_request;
+    
         $this->logInfo('plgVmConfirmedOrder order number: ' . $order['details']['BT']->order_number, 'message');
         $subscribe_id = NULL;
 
@@ -57,7 +57,7 @@ class  EpaycoPaymentPlugin extends AbstractPaymentPlugin
         if (isset($order['details']['BT']->address_2) and $order['details']['BT']->address_2) {
             $name .= $order['details']['BT']->address_2;
         }
-
+        $quantity=0;
         foreach ($cart->products as $key => $product) {
             $quantity = $quantity + $product->quantity;
             $nameproduct = $product->product_name;
