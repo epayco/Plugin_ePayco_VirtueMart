@@ -120,8 +120,7 @@ class  EpaycoPaymentPlugin extends AbstractPaymentPlugin
         $currency_model = VmModel::getModel('currency');
         $currency_payment = $currency_model->getCurrency()->currency_code_3;
         $retourParams = $this->setRetourParams($order, $this->getContext());
-        $baseUrl = 'https://a937-181-134-248-46.ngrok-free.app/virtuemart3/';
-        //$baseUrl = JURI::base();
+        $baseUrl = JURI::base();
         $post_variables = array(
             'SOCIETE' => $order['details']['BT']->company,
             'NOM' => $order['details']['BT']->last_name,
