@@ -394,7 +394,7 @@ class plgVmPaymentPayco extends vmPSPlugin
             $html = $this->renderByLayout('epayco_response_standard', $params);
             //reset cart
             $this->emptyCart();
-            JRequest::setVar('html', $html);
+            //JRequest::setVar('html', $html);
         }
         return TRUE;
     }
@@ -449,7 +449,7 @@ class plgVmPaymentPayco extends vmPSPlugin
             $orderDetails['customer_notified']=1;
             $orderDetails['order_status'] = $status;
             //$customer_total = (number_format((float)$order['details']['BT']->order_total, 2, '.', ''));
-            $orderDetails['comments'] = vmText::sprintf('VMPAYMENT_TCO_PAYMENT_STATUS_CONFIRMED', $order_number);
+            //$orderDetails['comments'] = vmText::sprintf('VMPAYMENT_TCO_PAYMENT_STATUS_CONFIRMED', $order_number);
             $orderDetails['virtuemart_order_id'] = $order_id;
             // Guardar los cambios
             try{
