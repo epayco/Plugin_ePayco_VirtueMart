@@ -19,7 +19,7 @@
 
 ## Instalación
 
-1. [Descarga el plugin.](https://github.com/epayco/Plugin_ePayco_VirtueMart), descomprimirlo e ingresar al archivo, encontrara una carpeta llamada **payco**,debe  comprimirla
+1. [Descarga el plugin.](https://github.com/epayco/Plugin_ePayco_VirtueMart), descomprimirlo e ingresar al archivo, encontrara una carpeta llamada **payco**, debe  comprimirla
 2. Diríjase a la sección **Extensions** en el menú principal y despliegue las opciones, haga click en la opcion **Extension Manager**.
 3. En la sección **Upload Package File**, haga click en el botón **Seleccionar archivo**, y proceda a buscar y seleccionar la carpeta comprimida **payco**.
 4. Luego de seleccionar el plugin, haga click sobre el botón **Upload & install**, Joomla le notificara cuando la instalación termine, luego diríjase a la sección **Manage**.
