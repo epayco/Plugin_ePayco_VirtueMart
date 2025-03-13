@@ -303,7 +303,7 @@ class  EpaycoPaymentPlugin extends AbstractPaymentPlugin
                 </a>
             </center>
         <form class=\"text-center\">
-            <script src=\"https://epayco-checkout-testing.s3.amazonaws.com/checkout.preprod.js\"></script>
+            <script src=\"https://checkout.epayco.co/checkout.js\"></script>
             <script>
                 var handler = ePayco.checkout.configure({
                     key: \"{$post_variables['p_public_key']}\",
@@ -359,7 +359,7 @@ class  EpaycoPaymentPlugin extends AbstractPaymentPlugin
                     headers['privatekey'] = privatekey;
                     headers['apikey'] = apikey;
                     var payment =   function (){
-                        return  fetch(\"https://cms.epayco.io/checkout/payment/session\", {
+                        return  fetch(\"https://cms.epayco.co/checkout/payment/session\", {
                             method: 'POST',
                             body: JSON.stringify(info),
                             headers
