@@ -19,11 +19,11 @@
 
 ## Instalación
 
-1. [Descarga el plugin.](https://github.com/epayco/Plugin_ePayco_VirtueMart/releases/tag/3.9.13)
+1. [Descarga el plugin.](https://github.com/epayco/Plugin_ePayco_VirtueMart), descomprimirlo e ingresar al archivo, encontrara una carpeta llamada **payco**, debe  comprimirla
 2. Diríjase a la sección **Extensions** en el menú principal y despliegue las opciones, haga click en la opcion **Extension Manager**.
-3. En la sección **Upload Package File**, haga click en el botón **Seleccionar archivo**, y proceda a buscar y seleccionar el plugin de ePayco.
+3. En la sección **Upload Package File**, haga click en el botón **Seleccionar archivo**, y proceda a buscar y seleccionar la carpeta comprimida **payco**.
 4. Luego de seleccionar el plugin, haga click sobre el botón **Upload & install**, Joomla le notificara cuando la instalación termine, luego diríjase a la sección **Manage**.
-5. Encontrará un campo disponible para buscar, digite Payco y presione el botón search, en la tabla se mostrar el plugin de ePayco con estado inactivo(círculo rojo), seleccione el plugin.
+5. Encontrará un campo disponible para buscar, digite ePayco y presione el botón search, en la tabla se mostrar el plugin de ePayco con estado inactivo(círculo rojo), seleccione el plugin.
 6. Oprima el botón verde con el texto **Enable** que se encuentra en la parte superior, para activar. Cuando el círculo rojo que se encuentra en el campo status en la tabla cambie a color verde, significa que el plugin está activo.
 7. Ahora diríjase a la sección **VirtueMart** y haga click sobre ella.
 8. Ahora se encuentra en el menú de administración de VirtueMart ubique la opción **Payment Methods** y haga click sobre ella.
@@ -65,6 +65,7 @@
 
 
 ## Versiones
+* [ePayco plugin VirtueMart joomla v4.X>, virtuemart 4.x](https://github.com/epayco/Plugin_ePayco_VirtueMart/releases/tag/5.0.0).
 * [ePayco plugin VirtueMart joomla v4.2.0, virtuemart 4.2.0](https://github.com/epayco/Plugin_ePayco_VirtueMart/releases/tag/4.2.0).
 * [ePayco plugin VirtueMart joomla v4.0.0, virtuemart 4.0.0](https://github.com/epayco/Plugin_ePayco_VirtueMart/releases/tag/4.0.0).
 * [ePayco plugin VirtueMart joomla v3.9.1, virtuemart 4.0.0](https://github.com/epayco/Plugin_ePayco_VirtueMart/releases/tag/3.9.1).
