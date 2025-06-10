@@ -66,6 +66,7 @@
 
 ## Versiones
 * [ePayco plugin VirtueMart joomla v4.X>, virtuemart 4.x](https://github.com/epayco/Plugin_ePayco_VirtueMart/releases/tag/5.0.0).
+* [ePayco plugin VirtueMart joomla v4.2.0, virtuemart 4.2.0](https://github.com/epayco/Plugin_ePayco_VirtueMart/releases/tag/4.2.0).
 * [ePayco plugin VirtueMart joomla v4.0.0, virtuemart 4.0.0](https://github.com/epayco/Plugin_ePayco_VirtueMart/releases/tag/4.0.0).
 * [ePayco plugin VirtueMart joomla v3.9.1, virtuemart 4.0.0](https://github.com/epayco/Plugin_ePayco_VirtueMart/releases/tag/3.9.1).
 * [ePayco plugin VirtueMart joomla v3.9.0, virtuemart 3.9.0](https://github.com/epayco/Plugin_ePayco_VirtueMart/releases/tag/3.9.0).

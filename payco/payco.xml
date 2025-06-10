@@ -7,20 +7,23 @@
     <copyright>Copyright (C) 2004 - 2017 Virtuemart Team. All rights reserved.</copyright>
     <license>http://www.gnu.org/licenses/gpl-3.0.html GNU/GPL</license>
     <version>3.9.13</version>
-    <description>
+        <description>
         <![CDATA[
-        <center>
-            <a href="http://epayco.com" target="_blank"><img src="../plugins/vmpayment/payco/payco/logopayco.png" alt="ePayco"/></a><br>
-            <h3>
-                ePayco<br>
-                <strong style="color: #F00;">
-                    Por seguridad recuerde siempre revisar su cuenta de ePayco
-                    <br>para confirmar las transacciones antes de hacer el envio.
-                </strong>
-            <h3>
-        </center>
+        <div style="text-align: center;">
+            <p>
+                <a href="http://epayco.com" target="_blank">
+                    <img style="width: 580px; height: 180px; object-fit: cover;"
+                        src="../plugins/vmpayment/payco/payco/logopayco.png"
+                        alt="ePayco" />
+                </a>
+            </p>
+            <p style="font-weight: bold; color: #F00; font-size: 13px;">
+                Recuerde siempre revisar su cuenta de ePayco
+                para confirmar las transacciones antes de hacer el envío.
+            </p>
+        </div>
         ]]>
-    </description>
+        </description>
 
     <files>
 	    <filename plugin="payco">payco.php</filename>

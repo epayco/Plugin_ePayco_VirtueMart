@@ -20,7 +20,7 @@ class JFormFieldGetPayco extends JFormField {
         vmJsApi::css('payco', 'plugins/vmpayment/payco/payco/assets/css/');
         vmJsApi::addJScript( '/plugins/vmpayment/payco/payco/assets/js/administrator.js');
         $banner = JURI::base() . '../plugins/vmpayment/payco/payco/images/logo.png';
-        $html = '<img src="' . $banner . '" />';
+        $html = '<img style="width:110px;" src="' . $banner . '" />';
         return $html;
 
     }

@@ -324,7 +324,7 @@ class plgVmPaymentPayco extends vmPSPlugin
 
         $is_reditect = false;
         if (isset($mb_data['ref_payco'])) {
-            $url = 'https://secure.epayco.io/validation/v1/reference/'.$mb_data['ref_payco'];
+            $url = 'https://eks-checkout-service.epayco.io/validation/v1/reference/'.$mb_data['ref_payco'];
             $responseData = $this->agafa_dades($url,false,$this->goter());
             $jsonData = @json_decode($responseData, true);
             $validationData = $jsonData['data'];
@@ -496,7 +496,7 @@ class plgVmPaymentPayco extends vmPSPlugin
 
     public function receivedEpaycoTransaction($mb_data):array
     {
-        $url = 'https://secure.epayco.io/validation/v1/reference/'.$mb_data['ref_payco'];
+        $url = 'https://eks-checkout-service.epayco.io/validation/v1/reference/'.$mb_data['ref_payco'];
         $responseData = $this->agafa_dades($url,false,$this->goter());
         $jsonData = @json_decode($responseData, true);
         $validationData = $jsonData['data'];
@@ -876,7 +876,7 @@ class plgVmPaymentPayco extends vmPSPlugin
             $timeout = 5;
             $user_agent='Mozilla/5.0 (Windows NT 6.1; rv:8.0) Gecko/20100101 Firefox/8.0';
             curl_setopt($ch, CURLOPT_URL, $url);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
             curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
             curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);
             curl_setopt($ch, CURLOPT_HEADER, 0);
