@@ -303,7 +303,7 @@ class  EpaycoPaymentPlugin extends AbstractPaymentPlugin
                 </a>
             </center>
         <form class=\"text-center\">
-            <script src=\"https://checkout.epayco.co/checkout.js\"></script>
+           <script src=\"https://checkout.epayco.co/checkout.js\"></script>
             <script>
                 var handler = ePayco.checkout.configure({
                     key: \"{$post_variables['p_public_key']}\",
