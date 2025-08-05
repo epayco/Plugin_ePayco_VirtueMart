@@ -336,7 +336,8 @@ class  EpaycoPaymentPlugin extends AbstractPaymentPlugin
                     autoclick: \"{$autoclick}\",
                     ip: \"{$ip}\",
                     test: \"{$test}\".toString(),
-                    extras_epayco: extras_epayco
+                    extras_epayco: extras_epayco,
+                    checkout_version:2
                 }
                 const apiKey = \"{$post_variables['p_public_key']}\";
                 const privateKey = \"{$post_variables['p_private_key']}\";
