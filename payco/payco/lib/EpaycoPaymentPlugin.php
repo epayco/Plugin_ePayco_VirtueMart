@@ -103,15 +103,15 @@ class  EpaycoPaymentPlugin extends AbstractPaymentPlugin
         }
 
         if ($p_test_request == "TRUE") {
-            $test = "true";
+            $test = true;
         } else {
-            $test = "false";
+            $test = false;
         }
 
         if ($p_external_request == "TRUE") {
-            $external = "false";
+            $external = "onepage";
         } else {
-            $external = "true";
+            $external = "standard";
         }
 
 
@@ -121,6 +121,11 @@ class  EpaycoPaymentPlugin extends AbstractPaymentPlugin
         $currency_payment = $currency_model->getCurrency()->currency_code_3;
         $retourParams = $this->setRetourParams($order, $this->getContext());
         $baseUrl = JURI::base();
+        $tokenResponse = $this->epaycoBerarToken(trim($payco_public_key),trim($payco_private_key));
+        $token = null;
+        if(isset($tokenResponse['token'])){
+            $token = $tokenResponse['token'];
+        }
         $post_variables = array(
             'SOCIETE' => $order['details']['BT']->company,
             'NOM' => $order['details']['BT']->last_name,
@@ -173,6 +178,51 @@ class  EpaycoPaymentPlugin extends AbstractPaymentPlugin
             $msgEpaycoCheckout = '<span class="animated-points">Cargando métodos de pago</span>
                 <br><small class="epayco-subtitle"> Si no se cargan automáticamente, de clic en el botón "Pagar con ePayco</small>';
         }
+
+        $dataScript  = array(
+                "name"=>$this->string_sanitize($post_variables['p_product_name']),
+                "description"=>$this->string_sanitize($post_variables['p_description']),
+                "invoice"=>(string)$post_variables['p_id_factura'],
+                "currency"=>$post_variables['p_currency_code'],
+                "amount"=>floatval(number_format($post_variables['p_amount_'], 2, '.', '')),
+                "taxBase"=>floatval(number_format($post_variables['p_amount_base'], 2, '.', '')),
+                "tax"=>floatval(number_format($post_variables['p_tax'], 2, '.', '')),
+                "taxIco"=>floatval(0),
+                "country"=>$post_variables['p_country_code'],
+                "lang"=>$post_variables['lang'],
+                "confirmation"=>$post_variables['notification_url'],
+                "response"=>$post_variables['responseUrl'],
+                "billing" => [
+                    "address" => $post_variables['p_billing_adress'],
+                    "email" => $post_variables['p_billing_email'],
+                ],
+                "autoclick"=> true,
+                "ip"=>$ip,
+                "test"=>$test,
+                 "extras" => [
+                    "extra1" => (string)$post_variables['p_id_factura'],
+                    "extra2" => (string)$order['details']['BT']->order_pass,
+                    "extra3" => (string)$order['details']['BT']->virtuemart_order_id,
+                    "extra4" => (string)$payMethod
+                ],
+                "extrasEpayco" => [
+                    "extra5" => "P31"
+                ],
+                "epaycoMethodsDisable" => [],
+                "method"=> "POST",
+                "checkout_version"=>"2",
+                "autoClick" => false,
+            );
+            $checkoutSessionResponse = $this->epaycoSessionCheckout($token, $dataScript);
+            $sessionId = null;
+            if(isset($checkoutSessionResponse['success'])){
+                $sessionId = $checkoutSessionResponse["data"]['sessionId'];
+            }
+            $checkout =  base64_encode(json_encode([
+                "sessionId"=>$sessionId,
+                "external"=>$external,
+                "test"=>$test
+            ]));
 
         $js = '<style>
             .epayco-title{
@@ -303,87 +353,21 @@ class  EpaycoPaymentPlugin extends AbstractPaymentPlugin
                 </a>
             </center>
         <form class=\"text-center\">
-           <script src=\"https://checkout.epayco.co/checkout.js\"></script>
+           <script src=\"https://epayco-checkout-testing.s3.amazonaws.com/checkout.preprod-v2.js\"></script>
             <script>
-                var handler = ePayco.checkout.configure({
-                    key: \"{$post_variables['p_public_key']}\",
-                    test: \"{$test}\"
-                })
-                var extras_epayco = {
-                    extra5:\"P31\"
-                }
-                var date = new Date().getTime();
-                var data = {
-                    name: \"{$post_variables['p_product_name']}\",
-                    description: \"{$post_variables['p_description']}\",
-                    invoice: \"{$post_variables['p_id_factura']}\",
-                    currency: \"{$post_variables['p_currency_code']}\",
-                    amount: \"{$post_variables['p_amount_']}\".toString(),
-                    tax_base: \"{$post_variables['p_amount_base']}\".toString(),
-                    tax: \"{$post_variables['p_tax']}\".toString(),
-                    taxIco: \"0\",
-                    country: \"{$post_variables['p_country_code']}\",
-                    lang: \"{$post_variables['lang']}\",
-                    external: \"{$post_variables['external']}\",
-                    confirmation: \"{$post_variables['notification_url']}\",
-                    response: \"{$post_variables['responseUrl']}\",
-                    address_billing: \"{$post_variables['p_billing_adress']}\",
-                    email_billing: \"{$post_variables['p_billing_email']}\",
-                    extra1: \"{$post_variables['p_id_factura']}\",
-                    extra2: \"{$order['details']['BT']->order_pass}\",
-                    extra3: \"{$order['details']['BT']->virtuemart_order_id}\",
-                    extra4: \"{$payMethod}\",
-                    autoclick: \"{$autoclick}\",
-                    ip: \"{$ip}\",
-                    test: \"{$test}\".toString(),
-                    extras_epayco: extras_epayco
-                }
-                const apiKey = \"{$post_variables['p_public_key']}\";
-                const privateKey = \"{$post_variables['p_private_key']}\";
+            const params = JSON.parse(atob(\"{$checkout}\"));
+                let {
+                    sessionId,
+                    external,
+                    test
+                } = params; 
+                const checkout = ePayco.checkout.configure({
+                    sessionId: sessionId,
+                    type: external,
+                    test: test
+                });
                 var openChekout = function () {
-                        if(localStorage.getItem(\"invoicePayment\") == null){
-                        localStorage.setItem(\"invoicePayment\", data.invoice);
-                            makePayment(privateKey,apiKey,data, data.external == \"true\"?true:false)
-                        }else{
-                            if(localStorage.getItem(\"invoicePayment\") != data.invoice){
-                                localStorage.removeItem(\"invoicePayment\");
-                                localStorage.setItem(\"invoicePayment\", data.invoice);
-                                makePayment(privateKey,apiKey,data, data.external == \"true\"?true:false)
-                            }else{
-                                makePayment(privateKey,apiKey,data, data.external == \"true\"?true:false)
-                            }
-                        }
-                }
-                var makePayment = function (privatekey, apikey, info, external) {
-                    const headers = { \"Content-Type\": \"application/json\" } ;
-                    headers['privatekey'] = privatekey;
-                    headers['apikey'] = apikey;
-                    var payment =   function (){
-                        return  fetch(\"https://cms.epayco.co/checkout/payment/session\", {
-                            method: 'POST',
-                            body: JSON.stringify(info),
-                            headers
-                        })
-                            .then(res =>  res.json())
-                            .catch(err => err);
-                    }
-                    payment()
-                        .then(session => {
-                            if(session.data.sessionId != undefined){
-                                localStorage.removeItem(\"sessionPayment\");
-                                localStorage.setItem(\"sessionPayment\", session.data.sessionId);
-                                const handlerNew = window.ePayco.checkout.configure({
-                                    sessionId: session.data.sessionId,
-                                    external: external,
-                                });
-                                handlerNew.openNew()
-                            }else{
-                                handler.open(data)
-                            }
-                        })
-                        .catch(error => {
-                            error.message;
-                        });
+                    checkout.open();
                 }
                 var bntPagar = document.getElementById(\"btn_epayco\");
                 bntPagar.addEventListener(\"click\", openChekout);
@@ -411,6 +395,97 @@ class  EpaycoPaymentPlugin extends AbstractPaymentPlugin
         vRequest::setVar('html', $js . $html);
     }
 
+    public function epaycoBerarToken($public_key,$private_key)
+    {
+            $publicKey = trim($public_key);
+            $privateKey = trim($private_key);
+            $bearer_token = base64_encode($publicKey . ":" . $privateKey);
+            
+            if (!isset($_COOKIE[$publicKey])) {
+                $token = base64_encode($publicKey . ":" . $privateKey);
+                $bearer_token = $token;
+                $cookie_value = $bearer_token;
+                setcookie($publicKey, $cookie_value, time() + (60 * 14), "/");
+            } else {
+                $bearer_token = $_COOKIE[$publicKey];
+            }
+            
+            $headers = array(
+                    'Content-Type: application/json',
+                    'Authorization: Basic '.$bearer_token
+            );
+
+            $data = array(
+                'public_key' => $publicKey
+            );
+            $url = 'https://eks-apify-service.epayco.io/login';
+            $responseData = $this->PostCurl($url, $data, $headers);
+            $jsonData = @json_decode($responseData, true);
+            return $jsonData ;
+    }
+
+    private function epaycoSessionCheckout($bearer_token, $body){
+        $headers = array(
+                'Content-Type: application/json',
+                'Authorization: Bearer '.$bearer_token
+        );
+
+        $url = 'https://eks-apify-service.epayco.io/payment/session/create';
+        $responseData = $this->PostCurl($url, $body, $headers);
+        $jsonData = @json_decode($responseData, true);
+        return $jsonData;
+    }
+
+    private function PostCurl($url, $body, $headers, $method='POST')
+    {
+        try{
+            // Inicializamos cURL
+            $ch = curl_init();
+            $timeout = 5;
+            $user_agent = 'Mozilla/5.0 (Windows NT 6.1; rv:8.0) Gecko/20100101 Firefox/8.0';
+
+            // Configuraciones de cURL
+            curl_setopt($ch, CURLOPT_URL, $url);
+            if(!$body){
+                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);    // Desactivar verificación de certificado SSL
+                curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);    // Desactivar verificación de host SSL
+                curl_setopt($ch, CURLOPT_USERAGENT, $user_agent);   // Establecer el agente de usuario
+                curl_setopt($ch, CURLOPT_HEADER, 0);                // No incluir encabezados en la salida
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);        // Devolver la respuesta como string
+                curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, $timeout); // Tiempo de conexión máximo
+                curl_setopt($ch, CURLOPT_MAXREDIRS, 10);            // Máximo de redirecciones permitidas
+            }else{
+                $jsonData = json_encode($body);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method); 
+                curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonData); 
+                curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1); // Seguir redirecciones
+                curl_setopt($ch, CURLOPT_TIMEOUT, $timeout); // Tiempo de espera máximo
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Tiempo de espera máximo
+                curl_setopt($ch,CURLOPT_SSLKEYPASSWD, '');
+                curl_setopt($ch,CURLOPT_ENCODING, "");
+                curl_setopt($ch,CURLOPT_MAXREDIRS, 10);
+                curl_setopt($ch,CURLOPT_TIMEOUT, 600);
+                curl_setopt($ch,CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+            }
+            $data = curl_exec($ch);
+            if ($data === false) {
+                return array('curl_error' => curl_error($ch), 'curerrno' => curl_errno($ch));
+            }
+            curl_close($ch);
+
+            return $data;
+        } catch (\Throwable $e) {
+            /* @phpstan-ignore-next-line */
+            var_dump($e);
+            die();
+        } catch (\Exception $e) {
+            var_dump($e);
+            die();
+        }
+        
+    }
+
     private function getIp()
     {
         $ipaddress = '';
@@ -431,6 +506,16 @@ class  EpaycoPaymentPlugin extends AbstractPaymentPlugin
         else
             $ipaddress = 'UNKNOWN';
         return $ipaddress;
+    }
+
+    private function string_sanitize($string, $force_lowercase = true, $anal = false)
+    {
+
+        $strip = array("~", "`", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "=", "+", "[", "{", "]", "}", "\\", "|", ";", ":", "\"", "'", "&#8216;", "&#8217;", "&#8220;", "&#8221;", "&#8211;", "&#8212;", "â€”", "â€“", ",", "<", ".", ">", "/", "?");
+        $clean = trim(str_replace($strip, "", strip_tags($string)));
+        $clean = preg_replace('/\s+/', "_", $clean);
+        $clean = ($anal) ? preg_replace("/[^a-zA-Z0-9]/", "", $clean) : $clean;
+        return $clean;
     }
 
     public function restorStock($refVenta)

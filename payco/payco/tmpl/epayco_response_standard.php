@@ -33,7 +33,7 @@ $payment = $viewData["payment"];
                     <div class="h1Facture">
                         <h2 style="font-size: 22px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;font-weight: bold"><?php echo $payment['epayco_refecence']; ?> #<?php echo $payment['refPayco']; ?></h2>
                     </div>
-                    <div class="pFacture">
+                    <div class="">
                         <?php echo $payment['fecha']; ?>
                     </div>
                 </div>
@@ -300,6 +300,13 @@ $payment = $viewData["payment"];
     .pFacture {
         font-size: 16px;
         color: #000;
+        width: 100%;
+        box-sizing: border-box;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        white-space: pre-line; /* Permite saltos de línea si hay */
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .h3Facture,
