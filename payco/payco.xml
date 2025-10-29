@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <extension version="2.5" type="plugin" group="vmpayment" method="upgrade">
     <name>VM Payment - ePayco</name>
-    <creationDate>December 5 2019</creationDate>
+    <creationDate>October 29 2025</creationDate>
     <author>ePayco</author>
     <authorUrl>https://epayco.co</authorUrl>
     <copyright>Copyright (C) 2004 - 2017 Virtuemart Team. All rights reserved.</copyright>
     <license>http://www.gnu.org/licenses/gpl-3.0.html GNU/GPL</license>
-    <version>3.9.13</version>
+    <version>4.4.0</version>
         <description>
         <![CDATA[
         <div style="text-align: center;">

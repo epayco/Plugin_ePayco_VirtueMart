@@ -1,6 +1,6 @@
 #ePayco plugin para VirtueMart v2.0
 
-**Si usted tiene alguna pregunta o problema, no dude en ponerse en contacto con nuestro soporte técnico: desarrollo@payco.co.**
+**Si usted tiene alguna pregunta o problema, no dude en ponerse en contacto con nuestro soporte técnico: desarrollo@epayco.com.**
 
 ## Tabla de contenido
 
@@ -12,7 +12,7 @@
 
 ## Requisitos
 
-* Tener una cuenta activa en [ePayco](https://pagaycobra.com).
+* Tener una cuenta activa en [ePayco](https://epayco.com).
 * Tener instalado Joomla v2.5 y VirtueMart v2.0. o versiones superirores
 * Acceso a las carpetas donde se encuetra instalado Joomla y VirtueMart.
 * Acceso al admin de Joomla.
@@ -65,7 +65,8 @@
 
 
 ## Versiones
-* [ePayco plugin VirtueMart joomla v4.X>, virtuemart 4.x](https://github.com/epayco/Plugin_ePayco_VirtueMart/releases/tag/5.0.0).
+* [ePayco plugin VirtueMart joomla v4.4.0, virtuemart 4.4.0](https://github.com/epayco/Plugin_ePayco_VirtueMart/releases/tag/4.4.0).
+* [ePayco plugin VirtueMart joomla v4.X>, virtuemart 4.3.0](https://github.com/epayco/Plugin_ePayco_VirtueMart/releases/tag/4.3.0).
 * [ePayco plugin VirtueMart joomla v4.2.0, virtuemart 4.2.0](https://github.com/epayco/Plugin_ePayco_VirtueMart/releases/tag/4.2.0).
 * [ePayco plugin VirtueMart joomla v4.0.0, virtuemart 4.0.0](https://github.com/epayco/Plugin_ePayco_VirtueMart/releases/tag/4.0.0).
 * [ePayco plugin VirtueMart joomla v3.9.1, virtuemart 4.0.0](https://github.com/epayco/Plugin_ePayco_VirtueMart/releases/tag/3.9.1).
