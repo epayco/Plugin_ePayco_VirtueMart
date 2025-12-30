@@ -321,7 +321,6 @@ class plgVmPaymentPayco extends vmPSPlugin
         }
 
         $mb_data = vRequest::getRequest();
-
         $is_reditect = false;
         if (isset($mb_data['ref_payco'])) {
             $url = 'https://secure.epayco.co/validation/v1/reference/'.$mb_data['ref_payco'];
@@ -456,8 +455,8 @@ class plgVmPaymentPayco extends vmPSPlugin
                 if($signature == $x_signature){
                     if($orderStatus !== $status){
                         //$result = $orderModel->updateOrder($orderDetails);
-                        $result = $orderModel->updateStatusForOneOrder($order_id, $orderDetails, true);
-                        if($status=='X'){
+                        if($status=='X' && $orderStatus !='C' ){
+                            $result = $orderModel->updateStatusForOneOrder($order_id, $orderDetails, true);
                             //reponer inventario
                             $db = JFactory::getDbo();
 
@@ -475,13 +474,32 @@ class plgVmPaymentPayco extends vmPSPlugin
                                 $db->execute();
                             }
 
+                        }else{
+                            $result = $orderModel->updateStatusForOneOrder($order_id, $orderDetails, true);
+                             //reponer inventario
+                            $db = JFactory::getDbo();
+
+                            foreach ($orderDetails['items'] as $item) {
+                                $productId = $item->virtuemart_product_id;
+                                $cantidadVendida = $item->product_quantity;
+
+                                // Sumar del stock
+                                $query = $db->getQuery(true)
+                                    ->update($db->quoteName('#__virtuemart_products'))
+                                    ->set($db->quoteName('product_in_stock') . ' = ' . $db->quoteName('product_in_stock') . ' - ' . (int) $cantidadVendida)
+                                    ->where($db->quoteName('virtuemart_product_id') . ' = ' . (int) $productId);
+
+                                $db->setQuery($query);
+                                $db->execute();
+                            }
                         }
                         if (!$result) {
-                            die('no se pudo actualziar la orden.');
+                            //die('no se pudo actualziar la orden.');
                         }
+                        
                     }
                 }else{
-                    die('Firma no valida.');
+                    die('Firma no valida 1.');
                 }
 
             }catch(\Exception $e){
