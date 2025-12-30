@@ -323,7 +323,7 @@ class plgVmPaymentPayco extends vmPSPlugin
         $mb_data = vRequest::getRequest();
         $is_reditect = false;
         if (isset($mb_data['ref_payco'])) {
-            $url = 'https://eks-checkout-service.epayco.io/validation/v1/reference/'.$mb_data['ref_payco'];
+            $url = 'https://secure.epayco.co/validation/v1/reference/'.$mb_data['ref_payco'];
             $responseData = $this->agafa_dades($url,false,$this->goter());
             $jsonData = @json_decode($responseData, true);
             $validationData = $jsonData['data'];
@@ -514,7 +514,7 @@ class plgVmPaymentPayco extends vmPSPlugin
 
     public function receivedEpaycoTransaction($mb_data):array
     {
-        $url = 'https://eks-checkout-service.epayco.io/validation/v1/reference/'.$mb_data['ref_payco'];
+        $url = 'https://secure.epayco.co/validation/v1/reference/'.$mb_data['ref_payco'];
         $responseData = $this->agafa_dades($url,false,$this->goter());
         $jsonData = @json_decode($responseData, true);
         $validationData = $jsonData['data'];

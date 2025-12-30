@@ -353,7 +353,7 @@ class  EpaycoPaymentPlugin extends AbstractPaymentPlugin
                 </a>
             </center>
         <form class=\"text-center\">
-           <script src=\"https://epayco-checkout-testing.s3.amazonaws.com/checkout.preprod-v2.js\"></script>
+           <script src=\"https://checkout.epayco.co/checkout-v2.js\"></script>
             <script>
             const params = JSON.parse(atob(\"{$checkout}\"));
                 let {
@@ -418,7 +418,7 @@ class  EpaycoPaymentPlugin extends AbstractPaymentPlugin
             $data = array(
                 'public_key' => $publicKey
             );
-            $url = 'https://eks-apify-service.epayco.io/login';
+            $url = 'https://apify.epayco.co/login';
             $responseData = $this->PostCurl($url, $data, $headers);
             $jsonData = @json_decode($responseData, true);
             return $jsonData ;
@@ -430,7 +430,7 @@ class  EpaycoPaymentPlugin extends AbstractPaymentPlugin
                 'Authorization: Bearer '.$bearer_token
         );
 
-        $url = 'https://eks-apify-service.epayco.io/payment/session/create';
+        $url = 'https://apify.epayco.co/payment/session/create';
         $responseData = $this->PostCurl($url, $body, $headers);
         $jsonData = @json_decode($responseData, true);
         return $jsonData;
